@@ -1,0 +1,10 @@
+Package: CYO
+Type: Package
+Title: CYO methods
+Version: 0.1.1
+Author: JES
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: CYO project description
+License: MIT
+Encoding: UTF-8
+LazyData: true
