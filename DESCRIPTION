@@ -1,10 +1,10 @@
-Package: CYO
+Package: BigFive5q
 Type: Package
-Title: CYO methods
+Title: BigFive5q methods
 Version: 0.1.1
 Author: JES
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: CYO project description
+Description: BigFive5q project description
 License: MIT
 Encoding: UTF-8
 LazyData: true
