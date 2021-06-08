@@ -1,0 +1,14 @@
+name: BigFive5q
+title: BigFive5q
+username:
+account: juanesuarez
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4244530
+bundleId: 4693959
+url: https://juanesuarez.shinyapps.io/BigFive5q/
+when: 1623188392.86214
+lastSyncTime: 1623188392.86214
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: BFtests.rds|BigFive5q.R|DESCRIPTION|dev/TEST1.R|README.md|report_JES_OCEAN5q.Rmd

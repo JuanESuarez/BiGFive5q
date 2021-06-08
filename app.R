@@ -18,11 +18,12 @@ req(dictionary)
 questionsList <- dictionary$Question
 names(questionsList) <- dictionary$ID
 
-keys.list <- list(openess = c("OPN1","-OPN2","OPN3","-OPN4","OPN5","-OPN6","OPN7","OPN8","OPN9","OPN10"), 
-                  conscienciousness = c("CSN1","-CSN2","CSN3","-CSN4","CSN5","-CSN6","CSN7","-CSN8","CSN9","CSN10"), 
-                  extroversion = c("EXT1","-EXT2","EXT3","-EXT4","EXT5", "-EXT6", "EXT7", "-EXT8", "EXT9", "-EXT10"), 
-                  agreeability = c("-AGR1", "AGR2", "-AGR3", "AGR4", "-AGR5", "AGR6", "-AGR7", "AGR8", "AGR9", "AGR10"), 
-                  natural_reactions = c("EST1","-EST2","EST3","-EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
+# We use all positive questions, since data received already reverted 'negative' questions
+keys.list <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OPN6","OPN7","OPN8","OPN9","OPN10"), 
+                  conscienciousness = c("CSN1","CSN2","CSN3","CSN4","CSN5","CSN6","CSN7","CSN8","CSN9","CSN10"), 
+                  extroversion = c("EXT1","EXT2","EXT3","EXT4","EXT5", "EXT6", "EXT7", "EXT8", "EXT9", "EXT10"), 
+                  agreeability = c("AGR1", "AGR2", "AGR3", "AGR4", "AGR5", "AGR6", "AGR7", "AGR8", "AGR9", "AGR10"), 
+                  natural_reactions = c("EST1","EST2","EST3","EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
 
 # ----------------------------------------------------------
 
@@ -30,7 +31,9 @@ keys.list <- list(openess = c("OPN1","-OPN2","OPN3","-OPN4","OPN5","-OPN6","OPN7
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
-  titlePanel("OCEAN.5q Personality Traits Test"),
+  titlePanel("BigFive.5q Personality Traits Test"),
+  
+  h4("This test is based in the prestigiuos Big Five Personality Traits method, but using artificial intelligence to predict answers based on only five questions actually scored."),
   
   sidebarLayout(position = "left",
                 sidebarPanel(
@@ -42,16 +45,15 @@ ui <- fluidPage(
                                                       min = 1, max = 5, value = 3)),
                   
                   selectInput("select_algo", label = p("Select algorithm"),
-                              choices = list("POPULAR", "UBCF", "IBCF", "SVD", "RANDOM"),
-                              selected = "UBCF"),
-                  
-                  actionButton("new_questions", "Change questions to answer")
+                              choices = list("POPULAR", "UBCF", "SVD", "RANDOM"),
+                              selected = "UBCF")
+
                 ),
                 
                 mainPanel(tableOutput("user_results"), 
                           tableOutput("question_recom"),
                           p("Created by ",
-                            a("Juan E Suarez.", href="http://JuanESuarez.net")
+                            a("databellum", href="http://databellum.ai")
                           )
                 )
   )
@@ -62,10 +64,10 @@ server <- function(input, output) {
   
   ## pick random questions and display
   questions_to_rate <- reactive({
-    ignore <- input$new_questions  ### listen to button
+    # ignore <- input$new_questions  ### listen to button
     
-    rand_questions <- sample(length(questionsList), 5)
-    
+    rand_questions <- c(21,11,31,41,1) + sample(c(0:9), 5)
+
     output[[paste0("question", 1)]] <- renderText(questionsList[rand_questions[1]])
     output[[paste0("question", 2)]] <- renderText(questionsList[rand_questions[2]])
     output[[paste0("question", 3)]] <- renderText(questionsList[rand_questions[3]])
@@ -89,8 +91,7 @@ server <- function(input, output) {
       ratings[1, questions_to_rate()[i]] <- input[[paste0("slider", i)]]
     
     ### create recommendations
-    pred <- predict(recom(), as(ratings, "realRatingMatrix"),
-                    n = 45)
+    pred <- predict(recom(), as(ratings, "realRatingMatrix"), n = 45)
     
     cbind('Hidden question' = questionsList[getList(pred)[[1]]],
           'Predicted Rating' = sprintf("%1.1f", getRatings(pred)[[1]]))
