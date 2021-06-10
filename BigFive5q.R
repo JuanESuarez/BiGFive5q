@@ -474,7 +474,6 @@ analysis_results %>% knitr::kable(digits = 4)
 # )
 
 methods_choice <- list(
-  list("ALS", "ALS" = list(NULL)),
   list("RANDOM", "random items" = list(NULL)),
   list("POPULAR", "popular items" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50)),
