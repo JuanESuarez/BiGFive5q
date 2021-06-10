@@ -1,8 +1,9 @@
 # PTE
-# -Posibilidad de multialgoritmo (añgoritmo diferente según trait)
-# ------------------------------------
-# ------------------------------------
-# ------------------------------------
+# -Posibilidad de multialgoritmo (algoritmo diferente según trait)
+# -Selección de preguntas a responder (por << correl?)
+# -Probar ALS sin/con volúmenes
+# -Comprobar resultados
+# -Shiny (elegirAlgoritmo, criterioAsignPreguntas, comprobarResultados
 # ------------------------------------
 
 
