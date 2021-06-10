@@ -1,9 +1,9 @@
-# PTE
-# -Posibilidad de multialgoritmo (algoritmo diferente según trait)
-# -Selección de preguntas a responder (por << correl?)
+# PTE:
+# ---Obtener estimate teórico por montecarlo
+# ---Selección de preguntas a responder (por << correl?)
+# --Comprobar resultados
+# -Shiny (decidirAlgoritmo, criterioAsignPreguntas, comprobarResultados)
 # -Probar ALS sin/con volúmenes
-# -Comprobar resultados
-# -Shiny (elegirAlgoritmo, criterioAsignPreguntas, comprobarResultados
 # ------------------------------------
 
 
@@ -474,6 +474,7 @@ analysis_results %>% knitr::kable(digits = 4)
 # )
 
 methods_choice <- list(
+  list("ALS", "ALS" = list(NULL)),
   list("RANDOM", "random items" = list(NULL)),
   list("POPULAR", "popular items" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50)),
