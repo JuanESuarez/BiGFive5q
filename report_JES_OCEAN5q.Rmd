@@ -77,9 +77,9 @@ We have implemented a model that ...
 Finally, we can mention some potential improvements for future versions:
 -Optimizar tuning Recommender (evaluationScheme, k-fold, bootstrap, no-sparse, ) usando sub-particiones
 -Probar aumentando el tamaño del dataset (usando sub-participes de training)
--Ensemble de mejor algoritmos/trait
+-Ensemble de mejor algoritmo/trait
 -Negociar con ADE para crear modelo de rendimiento académico “5q”
--Mantener random de preguntas (para diversificar datos obtenidos) pero mejorar selección de otras preguntas por <<correlación
+-Mantener random de preguntas (para diversificar datos obtenidos) pero mejorar selección de otras preguntas por <<correlación ó CART
 -Posibilidad de >5 preguntas
 -Bias Month, Country (mostrar en EDA)
 -Mejoras SHINY: multialgoritmo_ensemble, botónSubmit, añadirPreguntasControl, almacenarResultados_ojoGDPR, ...
