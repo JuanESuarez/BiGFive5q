@@ -506,40 +506,36 @@ for (a in 1:length(methods_choice)) {
   chosen_questions <- seq(1, 41, by=10) + sample(c(0:9), 5)
 
   
-  
-  
-  
-  
-  chosen_questions <- sample(c(1:10), 1)
-  chosen_questions  
-  length(chosen_questions)
-  
-  
-  
-  
-  minVSlast <- NULL
-  chosen_questions <- 5  
-  for (q in c(1:4)) {
-    
-    for (r in c(1:10)) {
-      pairCompairLast <- paste((10*q)+r,chosen_questions[length(chosen_questions)])
-      minVSlast <- c(minVSlast, pairCompairLast)
-      
-      for (s in c(1:length(chosen_questions))) {
-        # (paste("min_B:",chosen_questions[1:s],(10*q)+r))
-      }
-    
-    }
-      print("-----")
-      print("Min corr. of...")
-      print(minVSlast)
-      minVSlast <- NULL      
-    chosen_questions <- c(chosen_questions,(10*q)+9)      
+  corQtn <- function(qx,qy) {
+    corAllQuestions[qx,qy]
   }
+
+  chosen_questions <- sample(c(1:10), 1)
+  chosen_questions <- 3
+  for (q in c(1:4)) {# EACH TRAIT
+      
+    minVScurrent <- NULL    
+
+    for (s in c(1:length(chosen_questions))) {#EACH 
+
+      for (r in c(1:10)) {
+        # minVSlast <- c(minVSlast, paste("corQtn(",(10*q)+r,",",chosen_questions[s],")",sep=""))
+        minVSlast <- c(minVSlast, corQtn((10*q)+r,chosen_questions[s]))
+        }
+      # minVScurrent <- c(minVScurrent, minVSlast, "//")
+      minVScurrent <- c(minVScurrent, minVSlast)
+      minVSlast <- NULL 
+    }
+    print("-----")
+    print("Min of mins...")
+    print(paste("TRAIT:", q+1))
+    print(minVScurrent)
+       
+    chosen_questions <- c(chosen_questions,(10*q)+6)
+
+    }# END EACH TRAIT
   
   chosen_questions
-  
-  
   
   
   
