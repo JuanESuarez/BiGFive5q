@@ -20,7 +20,9 @@ In this project, ...
 OBJETIVOS:
 * 1) minimizar test
 * 2) hacerlo móvil
-* 3) preparar para vincular con otros datos; 4) medir y mantener alta accuracy
+* 3) preparar para vincular con otros datos
+* 4) medir y mantener alta accuracy
+* 5) preguntas seleccionadas... afán recopilatorio/constructivo VS random/fijo 
 
 ORIGINALIDAD:
 * Adaptar el modelo de Recomendación (aunque la matriz no tenga sparsity)

@@ -504,7 +504,46 @@ for (a in 1:length(methods_choice)) {
   names(questionsList) <- dictionary$ID
   set.seed(1, sample.kind="Rounding")
   chosen_questions <- seq(1, 41, by=10) + sample(c(0:9), 5)
+
   
+  
+  
+  
+  
+  chosen_questions <- sample(c(1:10), 1)
+  chosen_questions  
+  length(chosen_questions)
+  
+  
+  
+  
+  minVSlast <- NULL
+  chosen_questions <- 5  
+  for (q in c(1:4)) {
+    
+    for (r in c(1:10)) {
+      pairCompairLast <- paste((10*q)+r,chosen_questions[length(chosen_questions)])
+      minVSlast <- c(minVSlast, pairCompairLast)
+      
+      for (s in c(1:length(chosen_questions))) {
+        # (paste("min_B:",chosen_questions[1:s],(10*q)+r))
+      }
+    
+    }
+      print("-----")
+      print("Min corr. of...")
+      print(minVSlast)
+      minVSlast <- NULL      
+    chosen_questions <- c(chosen_questions,(10*q)+9)      
+  }
+  
+  chosen_questions
+  
+  
+  
+  
+  
+    
   # Prepare known ratings (5 ot of 50) to send to the model - take from VALIDATION
   ratings <- matrix(NA, nrow = totRowsValidation, ncol = 50)
   ratings[, chosen_questions[1]] <- BF_test[,2:51][,chosen_questions[1]]
