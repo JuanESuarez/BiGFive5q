@@ -1,14 +1,5 @@
-# PTE:
-# ---Obtener estimate teórico por montecarlo
-# ---Selección de preguntas a responder (por << correl?)
-# --Comprobar resultados
-# -Shiny (decidirAlgoritmo, criterioAsignPreguntas, comprobarResultados)
-# -Probar ALS sin/con volúmenes
-# ------------------------------------
-
-
 ##########################################################
-# OCEAN.5q Project
+# BigFive.5q Project
 # Author: Juan Eloy Suarez
 ##########################################################
 
@@ -37,6 +28,8 @@ library(corrplot)
 
 library(recommenderlab)
 library(psych)
+library(gtools)
+library(matrixStats)
 
 options(digits=5)
 
@@ -46,6 +39,10 @@ Sys.setlocale("LC_TIME", "english")
 ##########################################################
 # Create dataset
 ##########################################################
+
+# Data sorce in Kaggle:
+# https://www.kaggle.com/tunguz/big-five-personality-test/download
+# API: kaggle datasets download -d tunguz/big-five-personality-test
 
 # tab delimited, and  our int columns are character, perhaps because of the nulls!
 df <- read.csv("./input/big-five-personality-test/data-final.csv", sep="\t", stringsAsFactors = FALSE, na.strings=c("NA","NaN", " ", "NULL"))
@@ -502,44 +499,50 @@ for (a in 1:length(methods_choice)) {
   # Pick one question of each group
   questionsList <- dictionary$Question
   names(questionsList) <- dictionary$ID
+
+
+  ##########################################################
+  # Questions selection
+  ##########################################################
+  # We want to request answers for a few, very uncorrelated, questions, but we also want answers (looking forward to future developments) will cover all questions. So, we randomly select a "seed question" and then calculate the best set of questions we want to get answer to improve model results.  
+  
+  # Generate all possible combinations of questions (10^5)
+  potentialQuestionsSets <- as(expand.grid(keys.list.allPositive), "matrix")
+  head(potentialQuestionsSets) 
+  # generate first "seed" question
   set.seed(1, sample.kind="Rounding")
-  chosen_questions <- seq(1, 41, by=10) + sample(c(0:9), 5)
-
-  
-  corQtn <- function(qx,qy) {
-    corAllQuestions[qx,qy]
-  }
-
-  chosen_questions <- sample(c(1:10), 1)
-  chosen_questions <- 3
-  for (q in c(1:4)) {# EACH TRAIT
-      
-    minVScurrent <- NULL    
-
-    for (s in c(1:length(chosen_questions))) {#EACH 
-
-      for (r in c(1:10)) {
-        # minVSlast <- c(minVSlast, paste("corQtn(",(10*q)+r,",",chosen_questions[s],")",sep=""))
-        minVSlast <- c(minVSlast, corQtn((10*q)+r,chosen_questions[s]))
-        }
-      # minVScurrent <- c(minVScurrent, minVSlast, "//")
-      minVScurrent <- c(minVScurrent, minVSlast)
-      minVSlast <- NULL 
+  randomSeedQuestion <- colnames(BF_test[,2:51])[sample(1:50, 1)]
+  randomSeedQuestion
+  # Filter only sets of questions containing the initial ramdom seed question
+  potentialQuestionsSets <- 
+    potentialQuestionsSets[which(rowAnys(potentialQuestionsSets == randomSeedQuestion)),]
+  head(potentialQuestionsSets) 
+  # Once we know potential combinations of questions to get answer from, we need to calculate which is best for predicting. Our premise will be to get the set with minimum correlation among its pairs. The reason is that low correlation will inform us better of the "difficult" questions where model will be weaker
+  correlPerSet <- NULL
+  # Loop each potential set of questions
+  for (qs in 1:nrow(potentialQuestionsSets)) {
+    # generate all pairs of questions (10) within given set
+    couplesThisCombination <- combinations(5,2,v=potentialQuestionsSets[qs,])
+    pairsCorrelationsThisSet <- NULL
+    # now we loop those pairs to get a summary number based on their correlation
+    for (c in 1:nrow(couplesThisCombination)) {
+      question1 <- couplesThisCombination[c,1]
+      question2 <- couplesThisCombination[c,2]
+      pairsCorrelationsThisSet <- 
+        c(pairsCorrelationsThisSet, abs(corAllQuestions[question1,question2]))
+      }
+    correlPerSet <- c(correlPerSet, mean(pairsCorrelationsThisSet))
+    # ...we could use other criteria for detecting "difficult" combined questions, but always based in the correlations as a set... mean(pairsCorrelationsThisSet), min(pairsCorrelationsThisSet), max(pairsCorrelationsThisSet), sd(pairsCorrelationsThisSet), median(pairsCorrelationsThisSet)
     }
-    print("-----")
-    print("Min of mins...")
-    print(paste("TRAIT:", q+1))
-    print(minVScurrent)
-       
-    chosen_questions <- c(chosen_questions,(10*q)+6)
-
-    }# END EACH TRAIT
-  
+  # Based on the minimum correlation among its questions, we select a set
+  potentialQuestionsSets[which.min(correlPerSet),]
+  # convert to column index for continuing modelling proccess
+  chosen_questions <- 
+    which(colnames(BF_test[,2:51]) %in% potentialQuestionsSets[which.min(correlPerSet),])
   chosen_questions
-  
-  
-  
-    
+
+
+  # ==============================
   # Prepare known ratings (5 ot of 50) to send to the model - take from VALIDATION
   ratings <- matrix(NA, nrow = totRowsValidation, ncol = 50)
   ratings[, chosen_questions[1]] <- BF_test[,2:51][,chosen_questions[1]]
