@@ -13,6 +13,7 @@ if(!require(psych)) install.packages("psych", repos = "http://cran.us.r-project.
 if(!require(recommenderlab)) install.packages("recommenderlab", repos = "http://cran.us.r-project.org")
 if(!require(caret)) install.packages("caret", repos = "http://cran.us.r-project.org")
 if(!require(corrplot)) install.packages("corrplot", repos = "http://cran.us.r-project.org")
+if(!require(extraDistr)) install.packages("extraDistr", repos = "http://cran.us.r-project.org")
 if(!require(tinytex)) tinytex::install_tinytex()  # For RMarkdown .PDF generation
 
 library(tidyverse)
@@ -25,6 +26,7 @@ library(ggthemes)
 library(gridExtra)
 library(caret)
 library(corrplot)
+library(extraDistr)
 
 library(recommenderlab)
 library(psych)
@@ -440,16 +442,53 @@ rm(test_index, test_index_p2)
 ##########################################################
 # Montecarlo estimation of theoretical accuracy
 ##########################################################
-n <- 1000
+# As reference for accuracy improvement, we estimate using montecarlo a random selection
+# This function adjusts random score taking into account that answers of one of every 10 question is known. For simplicity, we assume a linear improvement of accuracy for 1/10 and correct by chance of randomly hitting (1/5) 
+adjustScore <- function(x) {
+  x + (4/5)*((realScores - x) / 10)
+}
+# generate a real result for our simulation
+set.seed(1, sample.kind="Rounding")
+realScores <- sample(c(0:100), 5, replace = TRUE)
+realQuartiles <- 1+floor(realScores/25)
+realHalves <- 1+floor(realScores/50)
+# iterate simulated results obtained randomly
 B <- 10000
-S <- replicate(B,{
-  x <- sample(c(-1,1), n, replace = TRUE, prob = c(18/38, 20/30))
-  sum(x)})
-S
-
+estimAccuracy <- NULL
+for (b in c(1:B)) {
+  predictedScores <- sample(c(0:100), 5, replace = TRUE)
+  predictedScores <- round(adjustScore(predictedScores),0)
+  predictedQuarters <- 1+floor(predictedScores/25)
+  predictedHalves <- 1+floor(predictedScores/50)
+  hitsQuartile <- (realQuartiles == predictedQuarters)
+  hitsHiLo <- (realHalves == predictedHalves)
+  mostHitHiLo <- (sum(hitsHiLo) >= 3)
+  estimAccuracy <- rbind(estimAccuracy, c(hitsQuartile, hitsHiLo, mostHitHiLo))
+}
+colnames(estimAccuracy) <- c(
+  c("hitsQuartile_O", "hitsQuartile_C", "hitsQuartile_E", "hitsQuartile_A", "hitsQuartile_N"), 
+  c("hitsHiLo_O", "hitsHiLo_C", "hitsHiLo_E", "hitsHiLo_A", "hitsHiLo_N"), 
+  "MostHitHilo")
+estimAccuracy <- colMeans(estimAccuracy)
+# We just obtained accuracies for each category
+estimAccuracy
 # Create a dataframe to store results of the analysis
-analysis_results <- data_frame(Trait="All", Score = 0.55, Accuracy_type = "3+ hits HighLow", Algorithm = "Montecarlo")
-# Show results
+analysis_results <- data_frame(
+    Trait="All", Score = estimAccuracy["MostHitHilo"], Accuracy_type = "3+ hits HighLow", Algorithm = "Montecarlo") %>% rbind(
+  data_frame(Trait="O_score", Score=estimAccuracy["hitsQuartile_O"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
+  data_frame(Trait="C_score", Score=estimAccuracy["hitsQuartile_C"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
+  data_frame(Trait="E_score", Score=estimAccuracy["hitsQuartile_E"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
+  data_frame(Trait="A_score", Score=estimAccuracy["hitsQuartile_A"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
+  data_frame(Trait="N_score", Score=estimAccuracy["hitsQuartile_N"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
+  data_frame(Trait="O_score", Score=estimAccuracy["hitsHiLo_O"], Accuracy_type = "Hits HighLow", Algorithm = "Montecarlo"), 
+  data_frame(Trait="C_score", Score=estimAccuracy["hitsHiLo_C"], Accuracy_type = "Hits HighLow", Algorithm = "Montecarlo"), 
+  data_frame(Trait="E_score", Score=estimAccuracy["hitsHiLo_E"], Accuracy_type = "Hits HighLow", Algorithm = "Montecarlo"), 
+  data_frame(Trait="A_score", Score=estimAccuracy["hitsHiLo_A"], Accuracy_type = "Hits HighLow", Algorithm = "Montecarlo"), 
+  data_frame(Trait="N_score", Score=estimAccuracy["hitsHiLo_N"], Accuracy_type = "Hits HighLow", Algorithm = "Montecarlo"), 
+  data_frame(Trait="All", Score=mean(estimAccuracy[1:5]), Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
+  data_frame(Trait="All", Score=mean(estimAccuracy[6:10]), Accuracy_type = "Hits HighLow", Algorithm = "Montecarlo")
+)
+# Show results (theoretical random estimate with a montecarlo approach) as base reference for next improvements during modelling
 analysis_results %>% knitr::kable(digits = 4)
 
 
@@ -461,22 +500,20 @@ analysis_results %>% knitr::kable(digits = 4)
 # >>>>>>>>>>>>
 # >>>>>>>>>>>>
 
-# methods_choice <- list(
-#   list("ALS", "ALS" = list(NULL)),
-#   list("RANDOM", "random items" = list(NULL)),
-#   list("POPULAR", "popular items" = list(NULL)),
-#   list("UBCF", "user-based CF" = list(nn=50)),
-#   list("IBCF", "item-based CF" = list(k=5000)),
-#   list("SVD", "SVD approximation" = list(k = 10))
-# )
-
 methods_choice <- list(
-  list("RANDOM", "random items" = list(NULL)),
+  list("ALS", "ALS" = list(NULL)),
   list("POPULAR", "popular items" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50)),
   list("IBCF", "item-based CF" = list(k=5000)),
   list("SVD", "SVD approximation" = list(k = 10))
 )
+
+# methods_choice <- list(
+#   list("POPULAR", "popular items" = list(NULL)),
+#   list("UBCF", "user-based CF" = list(nn=50)),
+#   list("IBCF", "item-based CF" = list(k=5000)),
+#   list("SVD", "SVD approximation" = list(k = 10))
+# )
 
 
 for (a in 1:length(methods_choice)) {
@@ -704,7 +741,7 @@ for (a in 1:length(methods_choice)) {
   tmpResultsPrediction
   
   ################################################
-  # Create de data frame
+  # Create data frame
   df_resultsPrediction <- 
     as.data.frame(tmpResultsPrediction)
   df_resultsPrediction <- df_resultsPrediction %>% 
