@@ -70,6 +70,7 @@ df <- df %>% filter_at(vars(2:51), all_vars((.) %in% c(1:5)))
 nrow(df)
 
 # Let's load up the questions from the data dictionary
+
 dictionary <-
   read_table("./data_source/codebook.txt", skip=5) %>%
   separate(1, sep="\t", extra="merge", into=c("ID", "Question")) %>%
