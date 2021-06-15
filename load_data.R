@@ -14,13 +14,7 @@ if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-
 if(!require(lubridate)) install.packages("lubridate", repos = "http://cran.us.r-project.org")
 
 library(tidyverse)
-library(patchwork)
 library(lubridate)
-
-options(digits=5)
-
-Sys.setlocale("LC_TIME", "english")
-
 
 ## =============================================================================
 ## =============================================================================
