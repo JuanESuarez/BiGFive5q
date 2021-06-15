@@ -5,8 +5,6 @@
 ################################################################################
 
 
-
-
 ## =============================================================================
 ## =============================================================================
 ## Initialize environment
@@ -45,56 +43,21 @@ options(digits=5)
 Sys.setlocale("LC_TIME", "english")
 
 
-
-
-
 ## =============================================================================
 ## =============================================================================
 ## Load dataset
 ## =============================================================================
 ## =============================================================================
 #
-# Data are located in Kaggle site (https://www.kaggle.com/tunguz/big-five-personality-test/download)
-# We copied kaggle dataset to ./data_source directory:  
-# tab delimited, and  our int columns are character, perhaps because of the nulls!
-df <- read.csv("./data_source/data-final.csv", sep="\t", stringsAsFactors = FALSE, na.strings=c("NA","NaN", " ", "NULL"))
-# We select relevant columns to use
-df <- df %>% select(c(1:50), dateload, country) %>% rownames_to_column('userId') %>%
-  mutate(Month = month(dateload), Year = year(dateload)) %>%
-  select(-dateload)
-# Remove rows containing any NA
-df <- na.omit(df)
-# Remove any value not between 1 and 5 in the answers columns
-df <- df %>% filter_at(vars(2:51), all_vars((.) %in% c(1:5)))
-
-nrow(df)
-
-# Let's load up the questions from the data dictionary
-
-dictionary <-
-  read_table("./data_source/codebook.txt", skip=5) %>%
-  separate(1, sep="\t", extra="merge", into=c("ID", "Question")) %>%
-  data.frame() %>% top_n(50)
-
 ##########################################################
-# Save input data to a local file
+# Reading input data files 
 ##########################################################
-# Save original data before added scores to expedite development
-saveRDS(df, "BFtests.rds")
-saveRDS(dictionary, "dictionary.rds")
-# >>>>>>>>>>>>
-# >>>>>>>>>>>>
-
-##########################################################
-# Reading data files previosly saved locally 
-##########################################################
-# <<<<<<<<<<<<
-# <<<<<<<<<<<<
-df <- readRDS("BFtests.rds")
-dictionary <- readRDS("dictionary.rds")
+# 
+# Data are available in RDS format in directory ./data_source after being loaded by previous code ./load_data.R. This R native format allows a very significant reduction in input data size
+df <- readRDS("./data_source/BFtests.rds")
+dictionary <- readRDS("./data_source/dictionary.rds")
 head(df)
 dictionary
-
 
 
 
