@@ -4,4 +4,5 @@
 .Ruserdata
 BigFive5q.Rproj
 /data_source/data-final.csv
+/data_source/codebook.txt
 /data_source/BFtests.rds
