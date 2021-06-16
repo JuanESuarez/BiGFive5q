@@ -61,12 +61,14 @@ dictionary
 
 
 
+
+
 ## =============================================================================
 ## =============================================================================
 ## Exploratory Data Analysis
 ## =============================================================================
 ## =============================================================================
-#
+
 
 ##########################################################
 # Calculate scores for each observation based on its questions
@@ -234,22 +236,21 @@ rm(scoresfile, df_scored_preReversion, keys.list, buckets)
 
 
 
+
 ## =============================================================================
 ## =============================================================================
 ## Data preparation for modeling
 ## =============================================================================
 ## =============================================================================
-#
+
+
 ##########################################################
 # Dataset size reduction
 ##########################################################
-# Let reduce dataset size to facilitate development
-# This step is intended to allow agile analysis in locale environment
-# Previous EDA was done using all observations 
+# Let reduce dataset size to facilitate development. This step is intended to allow agile analysis in locale environment. Previous EDA has been done using all observations 
 nObservsDevelopment <- 5000
 set.seed(1, sample.kind="Rounding")
 df <- df[sample(nrow(df), nObservsDevelopment), ]
-
 
 
 ##########################################################
@@ -279,6 +280,8 @@ keys.list.allPositive <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OP
 ##########################################################
 ## Save input data for shiny app
 ##########################################################
+# The shiny app is an interactive implementation of this model. It simplifies some parts of the process and shows prediction generated for each questions, as well as the calculated scores. Its purpose is educational and as a demo, it does not store data nor submit specific transaction, i.e. allows simulation with different values.
+# For this tool to work we pass reduced version of the dataseet to allow training and online prediction.
 BFdata <- as(data.matrix(df[,2:51]), "realRatingMatrix")
 saveRDS(BFdata, "BFdata.rds")
 saveRDS(dictionary, "dictionary.rds")
@@ -300,21 +303,33 @@ totRowsValidation <- nrow(BF_test) # number of observations to predict
 rm(test_index)
 
 
+
+
 ## =============================================================================
 ## =============================================================================
 ## Training and prediction
 ## =============================================================================
 ## =============================================================================
-#
+
 ##########################################################
-# Montecarlo estimation of theoretical accuracy
+# Accuracy measurement: metrics of prediction success
 ##########################################################
-# As reference for accuracy improvement, we estimate using montecarlo a random selection
+# We need to define clearly how our model increases the performance of prediction. The first step is define clear measures of the accuracy it reaches. The challenge of the project is to predict Scores for each one of the five personality traits, but these scores directly depend on the answers to 50 questions (10 per trait) where we only know real value of five of them. Thus, our accuracy will depend on how close we are to the real Score fro each trait, which is originally expressed in percentile. Since this measure can be understood as approximate/soft, we assume that, for a specific trait, hitting (predicting) the correct quartile could be considered as reasonable good result. In similar terms, hitting same half (high-low) is also -though less- a good result. Looking at all five trait as a set, we will also establish as a good result to correctly predict (high-low) most traits, i.e. three or more of the five. So, our accuracy metrics will be defined as:
+# - "Hits quartile" for a trait: Score for a specific trait predicts correct quartile (1-25, 26-50, 51-75, 76-100)
+# - "Hits quartile all traits": average of "Hits quartile" for all traits of an observation (test) 
+# - "Hits HighLow" for a trait: Score for a specific trait predicts correct half (1-50, 51-100)
+# - "Hits HigLow all traits": average of "Hits quartile" for all traits of an observation (test) 
+# - "3+ hits HighLow" for all traits: Scores of three or more traits predict correctly halves 
+
+##########################################################
+# Accuracy measurement: metrics of prediction success
+##########################################################
+# As reference for accuracy improvement, we will estimate what the Scores would be if using just a random criteria for predicting answers to each question. The random distribution of answers to 50 questions with 5 possible answers same probability (1/5) follow a binomial (Bernouilli) pattern. However, due to the calculations required for our accuracy indicators, we will code a Montecarlo simulation of a random selection, which will allow us to simulate results. These accuracies will be considered then as "base reference" for further improvements during modeling process.
 # This function adjusts random score taking into account that answers of one of every 10 question is known. For simplicity, we assume a linear improvement of accuracy for 1/10 and correct by chance of randomly hitting (1/5) 
 adjustScore <- function(x) {
   x + (4/5)*((realScores - x) / 10)
 }
-# generate a real result for our simulation
+# Fenerate a real result for our simulation
 set.seed(1, sample.kind="Rounding")
 realScores <- sample(c(0:100), 5, replace = TRUE)
 realQuartiles <- 1+floor(realScores/25)
@@ -341,7 +356,8 @@ estimAccuracy <- colMeans(estimAccuracy)
 estimAccuracy
 # Create a dataframe to store results of the analysis
 analysis_results <- data_frame(
-    Trait="All", Score = estimAccuracy["MostHitHilo"], Accuracy_type = "3+ hits HighLow", Algorithm = "Montecarlo") %>% rbind(
+  Trait="All", Score = estimAccuracy["MostHitHilo"], Accuracy_type = "3+ hits HighLow", Algorithm = "Montecarlo") %>% 
+  rbind(
   data_frame(Trait="O_score", Score=estimAccuracy["hitsQuartile_O"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
   data_frame(Trait="C_score", Score=estimAccuracy["hitsQuartile_C"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
   data_frame(Trait="E_score", Score=estimAccuracy["hitsQuartile_E"], Accuracy_type = "Hits quartile", Algorithm = "Montecarlo"), 
@@ -359,13 +375,14 @@ analysis_results <- data_frame(
 analysis_results %>% knitr::kable(digits = 4)
 
 
-#______________________________
-#JES_END-OF-QUESTIONS-SELECTION
-##########################################################
-# Questions selection
-##########################################################
-# We want to request answers for a few, very uncorrelated, questions, but we also want answers (looking forward to future developments) will cover all questions. So, we randomly select a "seed question" and then calculate the best set of questions we want to get answer to improve model results.  
 
+
+##########################################################
+# Questions selection: minimum combined correlation algorithm
+##########################################################
+# Our model relies on only five questions, out of 50, to predict the other 45. This means the best possible selection of the five questions we get real aswer for is very important to better predict the others. However, choosing just the same apparent best combination (always the same for given dataset) seems not to be the most open, realistic, rich option, since in case of moving this model into production, would result in a very poor diversity of input rsults, which long term would drive to worse results and lack of diversity. Thus, we will state as premise that, one of the questions to get real answer from, must be randomly selected (seed question), whilst the other four ones can be generated based on expected best results.
+# The algorithm we propose to select those other four question can be called "minimum combined correlation method", and consists in selecting those questions having less (absolute) correlation with the seed question and with the other chose questions. We implement therefore a recursive approach based in comparing the average correlation of all pairs of questions for each combination (10) of potential questions including the seed question (10000)
+# Minimum combined correlation algorithm:
 # Generate all possible combinations of questions (10^5)
 potentialQuestionsSets <- as(expand.grid(keys.list.allPositive), "matrix")
 head(potentialQuestionsSets) 
@@ -392,7 +409,6 @@ for (qs in 1:nrow(potentialQuestionsSets)) {
       c(pairsCorrelationsThisSet, abs(corAllQuestions[question1,question2]))
   }
   correlPerSet <- c(correlPerSet, mean(pairsCorrelationsThisSet))
-  # ...we could use other criteria for detecting "difficult" combined questions, but always based in the correlations as a set... mean(pairsCorrelationsThisSet), min(pairsCorrelationsThisSet), max(pairsCorrelationsThisSet), sd(pairsCorrelationsThisSet), median(pairsCorrelationsThisSet)
 }
 # Based on the minimum correlation among its questions, we select a set
 potentialQuestionsSets[which.min(correlPerSet),]
@@ -400,35 +416,37 @@ potentialQuestionsSets[which.min(correlPerSet),]
 chosen_questions <- 
   which(colnames(BF_test[,2:51]) %in% potentialQuestionsSets[which.min(correlPerSet),])
 chosen_questions
-#JES_END-OF-QUESTIONS-SELECTION
-#______________________________
 
 
 
 ##########################################################
 # Loop available recommendation algorithms
 ##########################################################
+# Our approach for predicting 45 answers (item) of an user that actually answered only to 5, will be to a Recommendation Model, based in the library Recommederlab. Tha basic idea is to consider Users (those who answer) and Items (questions) and apply some of the methods of standard recommendation. However, there are some singularities in our respect to a typical movie/book recommenadtion case:
+# - No sparcity: our matrix of answwers Users X Items has all cells filled, since we have data for all users answers all questions
+# - Matrix is pretty "vertical" having more that 800000 Users (after initial cleanup) and 50 Item (columns)
+# - Items have clear assumed correlative components, since questions are grouped by traits
+# Thus, we will choose adequate algorithms based on singularities:
+# Due to the shape of the matrix, we discard IBCF (Item Based collaborative Filtering) due to the risk in some cases fo not generating predictions for all item (could be fixed with average/median filling though loosing accuracy). Regarding no scarcity we also discard Popular method.
+# In order to generate a rich approach for our prediction, we'll focus in a collaborative filtering method (UBCF) and in a matrix factorization method (ALS) - we choose it instead of SVD for its superior accuracy given singularities of our User x Item matrix:
+# - UBCF (User Based Colaborative Filtering): this algorithm which tries to mimics word-ofmouth by analyzing rating data from many individuals. The assumption is that users with similar preferences will rate items similarly. Thus missing ratings for a user can be predicted by first finding a neighborhood of similar users and then aggregate the ratings of these users to form a prediction. The neighborhood is defined in terms of similarity between users, either by taking a given number of most similar users (k nearest neighbors) or all users within a given similarity threshold. Popular similarity measures for CF are the Pearson correlation coefficient and the Cosine similarity. These similarity measures are defined between two users ux and uy as 
+#   ¡¡FORMULA!!
+# and
+#   ¡¡FORMULA!!
+# where ~x = rx and ~y = ry represent the row vectors in R with the two users’ profile vectors. sd(·) is the standard deviation and k · k is the l^2-norm of a vector. For calculating similarity using rating data only the dimensions (items) are used which were rated by both users. Now the neighborhood for the active user N (a) ⊂ U can be selected by either a threshold on the similarity or by taking the k nearest neighbors. Once the users in the neighborhood are found, their ratings are aggregated to form the predicted rating for the active user. The easiest form is to just average the ratings in the neighborhood.
+#   ¡¡FORMULA!!
+# - ALS (Alternating Least Squares): ALS is an iterative optimization process where we, for every iteration, try to arrive closer and closer to a factorized representation of our original data. We have our original matrix R of size u x i with our users, items and some type of feedback data. We then want to find a way to turn that into one matrix with users and hidden features of size u x f and one with items and hidden features of size f x i. In U and V we have weights for how each user/item relates to each feature. What we do is we calculate U and V so that their product approximates R as closely as possible: R ≈ U x V. By randomly assigning the values in U and V and using least squares iteratively we can arrive at what weights yield the best approximation of R. The least squares approach in it’s basic forms means fitting some line to the data, measuring the sum of squared distances from all points to the line and trying to get an optimal fit by minimising this value.
+
+# we prepare method to run
+methods_choice <- list(
+  list("ALS", "ALS" = list(NULL)),
+  list("UBCF", "user-based CF" = list(nn=50))
+)
+
 
 # STARTS FOR-LOOP OF ALGORITHMS TO TEST
 # >>>>>>>>>>>>
 # >>>>>>>>>>>>
-
-methods_choice <- list(
-  list("ALS", "ALS" = list(NULL)),
-  list("POPULAR", "popular items" = list(NULL)),
-  list("UBCF", "user-based CF" = list(nn=50)),
-  list("IBCF", "item-based CF" = list(k=5000)),
-  list("SVD", "SVD approximation" = list(k = 10))
-)
-
-# methods_choice <- list(
-#   list("POPULAR", "popular items" = list(NULL)),
-#   list("UBCF", "user-based CF" = list(nn=50)),
-#   list("IBCF", "item-based CF" = list(k=5000)),
-#   list("SVD", "SVD approximation" = list(k = 10))
-# )
-
-
 for (a in 1:length(methods_choice)) {
   chosenAlgorithm <- methods_choice[[a]][[1]]
   chosenAlgorithmParams <- methods_choice[[a]][[2]]
@@ -639,14 +657,10 @@ for (a in 1:length(methods_choice)) {
 table_results <- analysis_results %>% 
   spread(Trait, Score, fill = "") %>% 
   select(1,2,4,8,5,6,3,7,4)
-
 table_results %>% 
   group_by(Accuracy_type, Algorithm) %>% 
   summarise("Best_Accuracy" = max(as.numeric(All)))
-
-
 table_results %>% knitr::kable(digits = 4)
-
 view(table_results)
 
 
