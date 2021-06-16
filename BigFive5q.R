@@ -225,7 +225,6 @@ corrplot(corAllQuestions,
          )
 
 
-
 ##########################################################
 # Clean environment before training
 ##########################################################
@@ -287,7 +286,6 @@ saveRDS(BFdata, "BFdata.rds")
 saveRDS(dictionary, "dictionary.rds")
 
 
-
 ##########################################################
 # Separate data in partitions
 ##########################################################
@@ -297,9 +295,7 @@ set.seed(1, sample.kind="Rounding")
 test_index <- sample(c(1:nrow(df)), (nrow(df) * devReduction), replace = FALSE)
 BF_train <- df[-test_index,]
 BF_test <- df[test_index,]
-
 totRowsValidation <- nrow(BF_test) # number of observations to predict
-
 rm(test_index)
 
 
@@ -321,9 +317,8 @@ rm(test_index)
 # - "Hits HigLow all traits": average of "Hits quartile" for all traits of an observation (test) 
 # - "3+ hits HighLow" for all traits: Scores of three or more traits predict correctly halves 
 
-##########################################################
+# ==============================
 # Accuracy measurement: metrics of prediction success
-##########################################################
 # As reference for accuracy improvement, we will estimate what the Scores would be if using just a random criteria for predicting answers to each question. The random distribution of answers to 50 questions with 5 possible answers same probability (1/5) follow a binomial (Bernouilli) pattern. However, due to the calculations required for our accuracy indicators, we will code a Montecarlo simulation of a random selection, which will allow us to simulate results. These accuracies will be considered then as "base reference" for further improvements during modeling process.
 # This function adjusts random score taking into account that answers of one of every 10 question is known. For simplicity, we assume a linear improvement of accuracy for 1/10 and correct by chance of randomly hitting (1/5) 
 adjustScore <- function(x) {
@@ -375,8 +370,6 @@ analysis_results <- data_frame(
 analysis_results %>% knitr::kable(digits = 4)
 
 
-
-
 ##########################################################
 # Questions selection: minimum combined correlation algorithm
 ##########################################################
@@ -418,7 +411,6 @@ chosen_questions <-
 chosen_questions
 
 
-
 ##########################################################
 # Loop available recommendation algorithms
 ##########################################################
@@ -436,73 +428,48 @@ chosen_questions
 # where ~x = rx and ~y = ry represent the row vectors in R with the two users’ profile vectors. sd(·) is the standard deviation and k · k is the l^2-norm of a vector. For calculating similarity using rating data only the dimensions (items) are used which were rated by both users. Now the neighborhood for the active user N (a) ⊂ U can be selected by either a threshold on the similarity or by taking the k nearest neighbors. Once the users in the neighborhood are found, their ratings are aggregated to form the predicted rating for the active user. The easiest form is to just average the ratings in the neighborhood.
 #   ¡¡FORMULA!!
 # - ALS (Alternating Least Squares): ALS is an iterative optimization process where we, for every iteration, try to arrive closer and closer to a factorized representation of our original data. We have our original matrix R of size u x i with our users, items and some type of feedback data. We then want to find a way to turn that into one matrix with users and hidden features of size u x f and one with items and hidden features of size f x i. In U and V we have weights for how each user/item relates to each feature. What we do is we calculate U and V so that their product approximates R as closely as possible: R ≈ U x V. By randomly assigning the values in U and V and using least squares iteratively we can arrive at what weights yield the best approximation of R. The least squares approach in it’s basic forms means fitting some line to the data, measuring the sum of squared distances from all points to the line and trying to get an optimal fit by minimising this value.
-
-# we prepare method to run
+# we prepare methods to run
 methods_choice <- list(
   list("ALS", "ALS" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50))
 )
 
-
-# STARTS FOR-LOOP OF ALGORITHMS TO TEST
-# >>>>>>>>>>>>
-# >>>>>>>>>>>>
+# This for-loop serves for exution of each chosen method to train, test and measure-accuracy
 for (a in 1:length(methods_choice)) {
+  ##########################################################
+  # Train model (Recommenderlab package)
+  ##########################################################
   chosenAlgorithm <- methods_choice[[a]][[1]]
-  chosenAlgorithmParams <- methods_choice[[a]][[2]]
-  ##########################################################
-  # Train model
-  ##########################################################
+  chosenAlgorithmParams <- methods_choice[[a]][[2]]  
+  # Train
   recom <- Recommender(
     as(data.matrix(BF_train[,2:51]), "realRatingMatrix"), 
     method = chosenAlgorithm, 
     parameter=chosenAlgorithmParams)
   
+  
   ##########################################################
   # Test (validate) model
   ##########################################################
-  
   questionsList <- dictionary$Question
   names(questionsList) <- dictionary$ID
-
   # ==============================
-  # Prepare known ratings (5 ot of 50) to send to the model - take from VALIDATION
+  # Prepare known ratings (5 out of 50) to send to the model - take from VALIDATION
   ratings <- matrix(NA, nrow = totRowsValidation, ncol = 50)
   ratings[, chosen_questions[1]] <- BF_test[,2:51][,chosen_questions[1]]
   ratings[, chosen_questions[2]] <- BF_test[,2:51][,chosen_questions[2]]
   ratings[, chosen_questions[3]] <- BF_test[,2:51][,chosen_questions[3]]
   ratings[, chosen_questions[4]] <- BF_test[,2:51][,chosen_questions[4]]
   ratings[, chosen_questions[5]] <- BF_test[,2:51][,chosen_questions[5]]
-  
   ratings <- as(ratings, "realRatingMatrix")
-  
+  # Predict
   # create (predict) recommendations (45) based on known 5 answers ('ratings') 
   pred <- predict(recom, ratings, n=45)
-  
   # Predicted answers from the model (still "rough")
-  if (length(unlist(getList(pred)))/45 == totRowsValidation) {
-    # when all users got a prediction
-    matrixNamesPredicted <- matrix(unlist(getList(pred)), ncol = 45, byrow = TRUE)
-    matrixScoresPredicted <- matrix(unlist(getRatings(pred)), ncol = 45, byrow = TRUE)
-  } else {
-    # populate if pending users to predict (IBCF method)
-    anyListNames <- getList(pred)[[1]]
-    matrixNamesPredicted <- matrix(NA, nrow=totRowsValidation, ncol=45)
-    matrixScoresPredicted <- matrix(NA, nrow=totRowsValidation, ncol=45)
-    for (i in c(1:totRowsValidation)) {
-      if (length(getList(pred)[[i]]) != 0) {
-        matrixNamesPredicted[i,] <- getList(pred)[[i]]
-        matrixScoresPredicted[i,] <- getRatings(pred)[[i]]
-      } else {
-        matrixNamesPredicted[i,] <- anyListNames
-        matrixScoresPredicted[i,] <- colMeans(BFdata[2:51])[anyListNames]
-      }
-    }
-  }
-  
-  # This matrices contains all predictions for validation dataset row by row (matrixScoresPredicted), BUT each row follows a different order, based on corresponding row of previous (matrixNamesPredicted) matrix
-  # So, we need to rearrange all lines to any, but the same, column structure
-  # We use list of first row as template for this arrangement:
+  matrixNamesPredicted <- matrix(unlist(getList(pred)), ncol = 45, byrow = TRUE)
+  matrixScoresPredicted <- matrix(unlist(getRatings(pred)), ncol = 45, byrow = TRUE)
+  # This matrix (matrixScoresPredicted) contain all predictions for validation dataset row by row (matrixScoresPredicted), BUT each row follows a different order, based on corresponding row of previous (matrixNamesPredicted) matrix
+  # So, we need to rearrange all lines to any, but the same, column structure. We use list of first row as template for this arrangement:
   tmpPatternColumnsReference <- matrixNamesPredicted[1,]
   tmpPatternColumnsReference
   # This loop performs rearrange row by row
@@ -512,24 +479,16 @@ for (a in 1:length(methods_choice)) {
   # We assign column names of first row (used as reference to new global matrix)
   colnames(matrixScoresPredicted) <- tmpPatternColumnsReference
   rm(matrixNamesPredicted)  # Remove this mixed matrix to prevent confusion, clarity in next steps
-  
-  # Inspect obtained matrix
-  dim(matrixScoresPredicted)
-  class(matrixScoresPredicted)
-  colnames(matrixScoresPredicted)
+  # Inspect obtained matrix with sorted (align values per column) predictions
   head(matrixScoresPredicted)
-  matrixScoresPredicted[1,] # First row
-  matrixScoresPredicted[totRowsValidation,] # Last row
   
-  
-  ##########################################################
-  # Collect together entered and predicted ratings to prepare results calculation
-  ##########################################################
+  # ==============================
+  # Join together predictions with 5 known answers
+  # Let's collect together entered answers and predicted ratings to prepare results calculation
   realRatings <- BF_test[,2:51] # real nx50 answers in the validation dataset
-  realRatings
-  dim(realRatings)
+  head(realRatings)
   enteredQuestions <- dictionary[chosen_questions[1:5],1] # names of 5 "known"
-  enteredRatings <- as(ratings, "matrix")[, chosen_questions[1:5]]  # answers of nx5 "known" questions
+  enteredRatings <- as(ratings, "matrix")[, chosen_questions[1:5]]  # answers of n x 5 "known" questions
   colnames(enteredRatings) <- enteredQuestions
   # Build a matrix with the union of 5 real answers + 45 predicted answers for all validation raws
   dim(enteredRatings) # n x 5 questions entered
@@ -556,13 +515,9 @@ for (a in 1:length(methods_choice)) {
   dim(scoresfile_real)
   dim(scoresfile_pred)
   
-  
   ##########################################################
   # Convert just calculated scores to ranking (percentile)
-  ##########################################################
-  # Results are presented in percentile for each user/trait 
-  # Calculate percentile of each score
-  # With all data + prediction scored together (n+1 rows matrix), calculate percentiles of the last row (results for the user) using eCDF
+  # Results are presented in percentile for each user/trait. With all data + prediction scored together (n+1 rows matrix), calculate percentiles of the last row (results for the user) using eCDF
   # For real data percentiles
   O_score <- round(ecdf(scoresfile_real[,"openess-A"])(scoresfile_real[,"openess-A"])*100,0)
   C_score <- round(ecdf(scoresfile_real[,"conscienciousness-A"])(scoresfile_real[,"conscienciousness-A"])*100,0)
@@ -581,31 +536,22 @@ for (a in 1:length(methods_choice)) {
   ################################################
   # Here we have all resulting data
   names(chosenAlgorithm) = "Algorithm"
-  userOtherData <- BF_test %>% select(userId, Year, Month, country) # Collect other user related data for final results context
   # Other files generated during process
-  dim(realRatings)
-  dim(scoresfile_real)
-  dim(matrixAllRatings)
-  dim(scoresfile_pred)
-  dim(userOtherData)
-  chosenAlgorithm# Algorithm used
-  dim(traits_percentiles_real)
-  dim(traits_percentiles_predicted)
   head(traits_percentiles_real)
   head(traits_percentiles_predicted)
   
-  
   ##########################################################
   # Compose high level result in a data frame
-  ##########################################################
+  # We need to calculate several accuracy indicators (by trait/general, by quarter/half correct prediction, and by most traits correctly predicted)
+  # Detect quartile success in trait
   accuracyPerQuartile <- colMeans((1+floor(abs((traits_percentiles_real-1))/25)) == (1+floor(abs((traits_percentiles_predicted-1))/25)))
   accuracyPerQuartileMean <- as(cbind("All", mean(accuracyPerQuartile),"Hits quartile"),"matrix")
   accuracyPerQuartile <- cbind(as(accuracyPerQuartile,"matrix"), Accuracy_type = "Hits quartile")
-  
+  # Detect High-Low success in trait
   accuracyPerHalf <- colMeans((1+floor(abs((traits_percentiles_real-1))/50)) == (1+floor(abs((traits_percentiles_predicted-1))/50)))
   accuracyPerHalfMean <- as(cbind("All", mean(accuracyPerHalf),"Hits HighLow"),"matrix")
   accuracyPerHalf <- cbind(as(accuracyPerHalf,"matrix"), Accuracy_type = "Hits HighLow")
-  
+  # Detect High-Low successes are >= 3 in same test
   accuracySameHalf <- (1+floor(abs((traits_percentiles_real-1))/50)) == (1+floor(abs((traits_percentiles_predicted-1))/50))
   accuracySameHalf <- mean(rowSums(accuracySameHalf[,1:5]) >= 3)
   accuracySameHalf <- as(cbind("All", accuracySameHalf,"3+ hits HighLow"),"matrix")
@@ -622,28 +568,20 @@ for (a in 1:length(methods_choice)) {
   tmpResultsPrediction <- tmpResultsPrediction %>% 
     rbind(accuracySameHalf, accuracyPerQuartileMean, accuracyPerHalfMean) %>% 
     cbind("Algorithm" = chosenAlgorithm)
-  
-  tmpResultsPrediction
-  
-  ################################################
+  head (tmpResultsPrediction)
   # Create data frame
-  df_resultsPrediction <- 
-    as.data.frame(tmpResultsPrediction)
+  df_resultsPrediction <- as.data.frame(tmpResultsPrediction)
   df_resultsPrediction <- df_resultsPrediction %>% 
     mutate(Score = as.double(as.character(df_resultsPrediction$Score)))
-  df_resultsPrediction
+  head(df_resultsPrediction)
   rm(tmpResultsPrediction)
-  # Store and show results
+  # Store results
   analysis_results <- bind_rows(
     analysis_results, 
     df_resultsPrediction)
-  analysis_results %>% knitr::kable(digits = 4)
-  
-}
-# ENDS FOR-LOOP OF ALGORITHMS TO TEST
-# <<<<<<<<<<
-# <<<<<<<<<<
 
+  }
+# Ends FOR-LOOP of algorithms to model
 
 
 
@@ -653,15 +591,14 @@ for (a in 1:length(methods_choice)) {
 ## Show final results
 ## =============================================================================
 ## =============================================================================
-
-table_results <- analysis_results %>% 
+#
+# WE can know compare how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach
+analysis_results %>% 
   spread(Trait, Score, fill = "") %>% 
-  select(1,2,4,8,5,6,3,7,4)
-table_results %>% 
+  select(1,2,4,8,5,6,3,7,4) %>% 
   group_by(Accuracy_type, Algorithm) %>% 
-  summarise("Best_Accuracy" = max(as.numeric(All)))
-table_results %>% knitr::kable(digits = 4)
-view(table_results)
+  summarise("Best_Accuracy" = max(as.numeric(All))) %>% 
+  knitr::kable(digits = 4) %>% view()
 
 
 
