@@ -126,10 +126,10 @@ natural_reactions = dictionary[c(11:20), "ID"]
 agreeability = dictionary[c(21:30), "ID"]
 conscienciousness = dictionary[c(31:40), "ID"]
 openess = dictionary[c(41:50), "ID"]
-buckets = list("extroversion" = extroversion, 
-               "natural_reactions" = natural_reactions, 
-               "agreeability" = agreeability, 
-               "conscienciousness" = conscienciousness, 
+buckets = list("extroversion" = extroversion,
+               "natural_reactions" = natural_reactions,
+               "agreeability" = agreeability,
+               "conscienciousness" = conscienciousness,
                "openess"= openess)
 # Groups analysis
 # For each concept, let's calculate alfa to check "internal consistency" of its questions
@@ -155,7 +155,9 @@ tmpAvg <- mean(traitsAlphas$raw_alpha)
 traitsAlphas %>%
   ggplot(aes(Group, raw_alpha)) +
   geom_point(color="blue") +
-  geom_hline(yintercept=tmpAvg, linetype="dashed", color = "orange", size=2) +
+  geom_hline(yintercept=0.8, linetype="dashed", color = "green", size=2) +
+  geom_hline(yintercept=0.9, linetype="dashed", color = "green", size=2) +
+  geom_hline(yintercept=tmpAvg, linetype="dashed", color = "gray", size=1) +
   geom_label_repel(aes(label = Group),
                    label.size = NA,
                    fill = "transparent",
@@ -177,7 +179,8 @@ traitsAlphas %>%
 # We calculate correlation among all questions. Some questions are reverted, but this affects only to the sign of the correlation.
 # Correlation calculation. Calculate global correlation matrix to see full landscape instead of just per trait
 corAllQuestions <- cor(df[,2:51])
-head(corAllQuestions)
+# Sample of values (two per trait)
+head(corAllQuestions[,c(1:2,11:12,21:22,31:32,41:42)])
 # Significance calculation. This function calculates de significance test associated to the corrrelation matrix
 cor.mtest <- function(mat, ...) {
   mat <- as.matrix(mat)
@@ -197,7 +200,31 @@ p.mat <- cor.mtest(corAllQuestions)  # significance test
 # Correlation within same group:
 # Questions explitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). 
 # We see now two examples two different traits (groups). Correlation is clearly high within same group.
+corrplot(corAllQuestions[1:10,1:10], 
+         method = "circle", 
+         type = "upper", 
+         order = "alphabet", 
+         tl.col = "black", tl.srt = 90, 
+         title =  "Trait: Openess", 
+         p.mat = p.mat, sig.level = 0.01
+)
 corrplot(corAllQuestions[11:20,11:20], 
+         method = "circle", 
+         type = "upper", 
+         order = "alphabet", 
+         tl.col = "black", tl.srt = 90, 
+         title =  "Trait: Openess", 
+         p.mat = p.mat, sig.level = 0.01
+)
+corrplot(corAllQuestions[21:30,21:30], 
+         method = "circle", 
+         type = "upper", 
+         order = "alphabet", 
+         tl.col = "black", tl.srt = 90, 
+         title =  "Trait: Openess", 
+         p.mat = p.mat, sig.level = 0.01
+)
+corrplot(corAllQuestions[31:40,31:40], 
          method = "circle", 
          type = "upper", 
          order = "alphabet", 
@@ -216,12 +243,12 @@ corrplot(corAllQuestions[41:50,41:50],
 # Correlation with other groups. However, we see also some other significant correlations of some questions with questions that "belong" to different traits. Since our challenge is preciselly to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
 # http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram
 corrplot(corAllQuestions, 
-         method = "circle", #circle, color, pie
-         type = "upper", #full, upper, lower
-         order = "alphabet", #"AOE", "FPC", "hclust", "alphabet"
+         method = "circle",
+         type = "upper",
+         order = "alphabet", 
          tl.col = "black", tl.srt = 90, 
          bg = "white", 
-         p.mat = p.mat, sig.level = 0.01#, insig = "p-value"#blank, p-value, pch
+         p.mat = p.mat, sig.level = 0.01
          )
 
 
@@ -324,7 +351,7 @@ rm(test_index)
 adjustScore <- function(x) {
   x + (4/5)*((realScores - x) / 10)
 }
-# Fenerate a real result for our simulation
+# Generate a real result for our simulation
 set.seed(1, sample.kind="Rounding")
 realScores <- sample(c(0:100), 5, replace = TRUE)
 realQuartiles <- 1+floor(realScores/25)
@@ -406,8 +433,7 @@ for (qs in 1:nrow(potentialQuestionsSets)) {
 # Based on the minimum correlation among its questions, we select a set
 potentialQuestionsSets[which.min(correlPerSet),]
 # convert to column index for continuing modelling proccess
-chosen_questions <- 
-  which(colnames(BF_test[,2:51]) %in% potentialQuestionsSets[which.min(correlPerSet),])
+chosen_questions <- which(colnames(BF_test[,2:51]) %in% potentialQuestionsSets[which.min(correlPerSet),])
 chosen_questions
 
 
@@ -421,14 +447,15 @@ chosen_questions
 # Thus, we will choose adequate algorithms based on singularities:
 # Due to the shape of the matrix, we discard IBCF (Item Based collaborative Filtering) due to the risk in some cases fo not generating predictions for all item (could be fixed with average/median filling though loosing accuracy). Regarding no scarcity we also discard Popular method.
 # In order to generate a rich approach for our prediction, we'll focus in a collaborative filtering method (UBCF) and in a matrix factorization method (ALS) - we choose it instead of SVD for its superior accuracy given singularities of our User x Item matrix:
-# - UBCF (User Based Colaborative Filtering): this algorithm which tries to mimics word-ofmouth by analyzing rating data from many individuals. The assumption is that users with similar preferences will rate items similarly. Thus missing ratings for a user can be predicted by first finding a neighborhood of similar users and then aggregate the ratings of these users to form a prediction. The neighborhood is defined in terms of similarity between users, either by taking a given number of most similar users (k nearest neighbors) or all users within a given similarity threshold. Popular similarity measures for CF are the Pearson correlation coefficient and the Cosine similarity. These similarity measures are defined between two users ux and uy as 
+# - UBCF (User Based Colaborative Filtering): this algorithm which tries to mimics word-of-mouth by analyzing rating data from many individuals. The assumption is that users with similar preferences will rate items similarly. Thus missing ratings for a user can be predicted by first finding a neighborhood of similar users and then aggregate the ratings of these users to form a prediction. The neighborhood is defined in terms of similarity between users, either by taking a given number of most similar users (k nearest neighbors) or all users within a given similarity threshold. Popular similarity measures for CF are the Pearson correlation coefficient and the Cosine similarity. These similarity measures are defined between two users ux and uy as 
 #   ¡¡FORMULA!!
 # and
 #   ¡¡FORMULA!!
-# where ~x = rx and ~y = ry represent the row vectors in R with the two users’ profile vectors. sd(·) is the standard deviation and k · k is the l^2-norm of a vector. For calculating similarity using rating data only the dimensions (items) are used which were rated by both users. Now the neighborhood for the active user N (a) ⊂ U can be selected by either a threshold on the similarity or by taking the k nearest neighbors. Once the users in the neighborhood are found, their ratings are aggregated to form the predicted rating for the active user. The easiest form is to just average the ratings in the neighborhood.
+# where ~x = rx and ~y = ry represent the row vectors in R with the two users’ profile vectors. sd(·) is the standard deviation and k · k is the l^2-norm of a vector. For calculating similarity using rating data only the dimensions (items) are used which were rated by both users. Now the neighborhood for the active user N (a) SIMBOLO_PERTENECE U can be selected by either a threshold on the similarity or by taking the k nearest neighbors. Once the users in the neighborhood are found, their ratings are aggregated to form the predicted rating for the active user. The easiest form is to just average the ratings in the neighborhood.
 #   ¡¡FORMULA!!
 # - ALS (Alternating Least Squares): ALS is an iterative optimization process where we, for every iteration, try to arrive closer and closer to a factorized representation of our original data. We have our original matrix R of size u x i with our users, items and some type of feedback data. We then want to find a way to turn that into one matrix with users and hidden features of size u x f and one with items and hidden features of size f x i. In U and V we have weights for how each user/item relates to each feature. What we do is we calculate U and V so that their product approximates R as closely as possible: R ≈ U x V. By randomly assigning the values in U and V and using least squares iteratively we can arrive at what weights yield the best approximation of R. The least squares approach in it’s basic forms means fitting some line to the data, measuring the sum of squared distances from all points to the line and trying to get an optimal fit by minimising this value.
 # we prepare methods to run
+
 methods_choice <- list(
   list("ALS", "ALS" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50))
@@ -481,7 +508,6 @@ for (a in 1:length(methods_choice)) {
   rm(matrixNamesPredicted)  # Remove this mixed matrix to prevent confusion, clarity in next steps
   # Inspect obtained matrix with sorted (align values per column) predictions
   head(matrixScoresPredicted)
-  
   # ==============================
   # Join together predictions with 5 known answers
   # Let's collect together entered answers and predicted ratings to prepare results calculation
@@ -512,8 +538,6 @@ for (a in 1:length(methods_choice)) {
   scoresfile_pred <- scoreFast(keys.list.allPositive, as(matrixAllRatings, "matrix"))
   # Put a suffix in predicted-based scores columns to distinguish from real-based
   colnames(scoresfile_pred) <- paste(colnames(scoresfile_pred), "_pred", sep = "")
-  dim(scoresfile_real)
-  dim(scoresfile_pred)
   
   ##########################################################
   # Convert just calculated scores to ranking (percentile)
@@ -579,11 +603,10 @@ for (a in 1:length(methods_choice)) {
   analysis_results <- bind_rows(
     analysis_results, 
     df_resultsPrediction)
-
-  }
+  analysis_results %>% knitr::kable(digits = 4)
+  
+}
 # Ends FOR-LOOP of algorithms to model
-
-
 
 
 ## =============================================================================
@@ -592,20 +615,22 @@ for (a in 1:length(methods_choice)) {
 ## =============================================================================
 ## =============================================================================
 #
-# WE can know compare how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach
-analysis_results %>% 
+# We can know compare how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach
+
+table_results <- analysis_results %>% 
   spread(Trait, Score, fill = "") %>% 
-  select(1,2,4,8,5,6,3,7,4) %>% 
+  select(1,2,4,8,5,6,3,7,4)
+
+rm(analysis_results)
+
+table_results %>% 
   group_by(Accuracy_type, Algorithm) %>% 
-  summarise("Best_Accuracy" = max(as.numeric(All))) %>% 
-  knitr::kable(digits = 4) %>% view()
+  summarise("Best_Accuracy" = max(as.numeric(All)))
 
 
+table_results %>% knitr::kable(digits = 4)
 
-
-
-
-
+view(table_results)
 
 
 
