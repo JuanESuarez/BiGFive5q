@@ -67,6 +67,7 @@ server <- function(input, output) {
     # ignore <- input$new_questions  ### listen to button
     
     rand_questions <- c(21,11,31,41,1) + sample(c(0:9), 5)
+    rand_questions <- c(1,11,21,31,41)  #JES
 
     output[[paste0("question", 1)]] <- renderText(questionsList[rand_questions[1]])
     output[[paste0("question", 2)]] <- renderText(questionsList[rand_questions[2]])
@@ -93,8 +94,10 @@ server <- function(input, output) {
     ### create recommendations
     pred <- predict(recom(), as(ratings, "realRatingMatrix"), n = 45)
     
-    cbind('Hidden question' = questionsList[getList(pred)[[1]]],
-          'Predicted Rating' = sprintf("%1.1f", getRatings(pred)[[1]]))
+    vector_hiddenQuestions <- paste(names(questionsList[getList(pred)[[1]]]), questionsList[getList(pred)[[1]]])  #JES
+    
+    cbind('Hidden question' = vector_hiddenQuestions[order(vector_hiddenQuestions)],
+          'Predicted Rating' = sprintf("%1.1f", getRatings(pred)[[1]]))  #JES
   })
   
   ### show usersresults
