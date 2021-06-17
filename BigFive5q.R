@@ -271,15 +271,6 @@ rm(scoresfile, df_scored_preReversion, keys.list, buckets)
 
 
 ##########################################################
-# Dataset size reduction
-##########################################################
-# Let reduce dataset size to facilitate development. This step is intended to allow agile analysis in locale environment. Previous EDA has been done using all observations 
-nObservsDevelopment <- 5000
-set.seed(1, sample.kind="Rounding")
-df <- df[sample(nrow(df), nObservsDevelopment), ]
-
-
-##########################################################
 # Reverted questions treatment
 ##########################################################
 # Our data contains answers to questions considered "reverted". This means that the question is written in a negative way and, for global analysis,  must be scored reverting results recorded.
@@ -301,6 +292,25 @@ keys.list.allPositive <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OP
                               agreeability = c("AGR1", "AGR2", "AGR3", "AGR4", "AGR5", "AGR6", "AGR7", "AGR8", "AGR9", "AGR10"), 
                               natural_reactions = c("EST1","EST2","EST3","EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
 
+
+
+##########################################################
+# We see mean and standard deviation of each trait's questions
+##########################################################
+traitsMeans <- c(mean(rowMeans(df[,2:11])), mean(rowMeans(df[,12:21])), mean(rowMeans(df[,22:31])), mean(rowMeans(df[,32:41])), mean(rowMeans(df[,42:51])))
+traitsSds <- c(sd(rowMeans(df[,2:11])), sd(rowMeans(df[,12:21])), sd(rowMeans(df[,22:31])), sd(rowMeans(df[,32:41])), sd(rowMeans(df[,42:51])))
+traitsMeans
+traitsSds
+names(traitsMeans) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
+names(traitsSds) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
+
+##########################################################
+# Dataset size reduction
+##########################################################
+# Let reduce dataset size to facilitate development. This step is intended to allow agile analysis in locale environment. Previous EDA has been done using all observations 
+nObservsDevelopment <- 5000
+set.seed(1, sample.kind="Rounding")
+df <- df[sample(nrow(df), nObservsDevelopment), ]
 
 
 ##########################################################

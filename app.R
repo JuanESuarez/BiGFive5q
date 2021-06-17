@@ -140,12 +140,26 @@ server <- function(input, output) {
     # We use psych::scoreItems to calculate scores (i.e. mean per group taking sign into account)
     # Add last row that contains predicted+entered answers and calculate results (OCEAN) for all lines
     scoresfile <- scoreFast(keys.list, rbind(as(BFdata, "matrix"), allRatings))
-    # With all data + prediction scored together (n+1 rows matrix), calculate percentiles of the last row (results for the user) using eCDF
-    result_O <- round(ecdf(scoresfile[,"openess-A"])(scoresfile[nrow(BFdata)+1,]["openess-A"])*100,0)
-    result_C <- round(ecdf(scoresfile[,"conscienciousness-A"])(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"])*100,0)
-    result_E <- round(ecdf(scoresfile[,"extroversion-A"])(scoresfile[nrow(BFdata)+1,]["extroversion-A"])*100,0)
-    result_A <- round(ecdf(scoresfile[,"agreeability-A"])(scoresfile[nrow(BFdata)+1,]["agreeability-A"])*100,0)
-    result_N <- round(ecdf(scoresfile[,"natural_reactions-A"])(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"])*100,0)
+    # With all data + prediction scored together (n+1 rows matrix), calculate percentiles of the last row (results for the user) assuming normality and based in mean and stf deviation of the whole initial dataset
+    traitsMeans <- c(2.9595, 3.0666, 3.7736, 3.3661, 3.8989)
+    traitsSds <- c(0.91036, 0.85857, 0.72926, 0.73734, 0.63024)
+    names(traitsMeans) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
+    names(traitsSds) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
+    
+    # result_O <- round(pnorm(scoresfile[nrow(BFdata)+1,]["openess-A"], traitsMeans["openess_OPN"], traitsSds["openess_OPN"])*100,0)
+    # result_C <- round(pnorm(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"], traitsMeans["conscienciousness_CSN"], traitsSds["conscienciousness_CSN"])*100,0)
+    # result_E <- round(pnorm(scoresfile[nrow(BFdata)+1,]["extroversion-A"], traitsMeans["extroversion_EXT"], traitsSds["extroversion_EXT"])*100,0)
+    # result_A <- round(pnorm(scoresfile[nrow(BFdata)+1,]["agreeability-A"], traitsMeans["agreeability_AGR"], traitsSds["agreeability_AGR"])*100,0)
+    # result_N <- round(pnorm(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"], traitsMeans["natural_reactions_EST"], traitsSds["natural_reactions_EST"])*100,0)
+    
+    result_O <- paste(scoresfile[nrow(BFdata)+1,]["openess-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["openess-A"], traitsMeans["openess_OPN"], traitsSds["openess_OPN"])*100,0), sep=" // ")
+    result_C <- paste(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"], traitsMeans["conscienciousness_CSN"], traitsSds["conscienciousness_CSN"])*100,0), sep=" // ")
+    result_E <- paste(scoresfile[nrow(BFdata)+1,]["extroversion-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["extroversion-A"], traitsMeans["extroversion_EXT"], traitsSds["extroversion_EXT"])*100,0), sep=" // ")
+    result_A <- paste(scoresfile[nrow(BFdata)+1,]["agreeability-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["agreeability-A"], traitsMeans["agreeability_AGR"], traitsSds["agreeability_AGR"])*100,0), sep=" // ")
+    result_N <- paste(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"], traitsMeans["natural_reactions_EST"], traitsSds["natural_reactions_EST"])*100,0), sep=" // ")
+    
+    
+    
     traits_percentiles <- c(result_O, result_C, result_E, result_A, result_N)
     cbind('Personality trait' = traits, 
           'Result' = traits_percentiles,
@@ -156,3 +170,4 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
