@@ -5,8 +5,12 @@ library(shiny)
 library(recommenderlab)
 library(psych)
 
+# install.packages("ECharts2Shiny")
+library(ECharts2Shiny)
+library(radarchart)
 
-# Data load and initialization -----------------------------
+# =============================================
+# Data load and initialization
 BFdata <- readRDS("BFdata.rds")
 dictionary <- readRDS("dictionary.rds")
 
@@ -25,10 +29,37 @@ keys.list <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OPN6","OPN7","
                   agreeability = c("AGR1", "AGR2", "AGR3", "AGR4", "AGR5", "AGR6", "AGR7", "AGR8", "AGR9", "AGR10"), 
                   natural_reactions = c("EST1","EST2","EST3","EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
 
-# ----------------------------------------------------------
+# some entered questions could be reverted. We identify which ones
+revertedQuestions <- c(2,4,6,8,10,12,14,21,23,25,27,32,34,36,38,47,44,46)  
+rand_questions <- c(21,11,31,41,1) + sample(c(0:9), 5)
+rand_reverted_questions <- rand_questions %in% revertedQuestions
+
+# Our dataset descriptive parameters per trait, which will be useful for percentile calculation assuming approx normality
+traitsMeans <- c(2.9595, 3.0666, 3.7736, 3.3661, 3.8989)
+traitsSds <- c(0.91036, 0.85857, 0.72926, 0.73734, 0.63024)
+names(traitsMeans) <- c("extroversion", "natural_reactions", "agreeability", "conscienciousness", "openess")
+names(traitsSds) <- c("extroversion", "natural_reactions", "agreeability", "conscienciousness", "openess")
+
+### read ratings
+traits <- c("Openess", "Conscientiousness", "Extroversion", "Agreeableness", "Natural Reactions")
+### descriptive texts for each trait
+traits_texts <- c(
+  "Also often called Openness to Experience. People who score low tend to be traditional and conventional",
+  "Individuals who score high on this factor are careful and diligent. Low scorers are impulsive and disorganized",
+  "Surgency or Positive Emotionality. Individuals who score high on this one are outgoing and social. Individuals who score low tend to be shut ins",
+  "High in this factor are friendly and optimistic. Low scorers are critical and aggressive",
+  "Emotional Stability. Often referred as Neuroticism or Negative Emotionality (in these two cases interpretations are inverted, can be though of as the opposite of Emotional Stability")
 
 
-# Define UI for application that draws a histogram
+
+
+
+
+# =============================================
+# =============================================
+# Define UI for application
+# =============================================
+# =============================================
 ui <- fluidPage(
   
   titlePanel("BigFive.5q Personality Traits Test"),
@@ -43,32 +74,37 @@ ui <- fluidPage(
                   lapply(1:5, function(i) sliderInput(paste0("slider", i),
                                                       label = textOutput(paste0("question", i)),
                                                       min = 1, max = 5, value = 3)),
-                  
-                  selectInput("select_algo", label = p("Select algorithm"),
-                              choices = list("POPULAR", "UBCF", "SVD", "RANDOM"),
-                              selected = "UBCF")
+                  # we fix algorithm to best performer vs accurate according to our modelling
+                  # selectInput("select_algo", label = p("Select algorithm"),
+                  #             choices = list("POPULAR", "UBCF", "SVD", "RANDOM"),
+                  #             selected = "UBCF")
 
                 ),
                 
-                mainPanel(tableOutput("user_results"), 
+                mainPanel(h3("Your score"),
+                          chartJSRadarOutput("radar", width = "450", height = "300"), width = 7,
+                          tableOutput("user_results"),                           
+                          h4("Detail of predictions per questions for academic purposes:"),
                           tableOutput("question_recom"),
-                          p("Created by ",
-                            a("databellum", href="http://databellum.ai")
+                          p("Created by JuanESuarez || ",
+                            a("databellum", href="http://databellum.es")
                           )
                 )
   )
 )
 
-# Define server logic required to draw a histogram
+
+
+# =============================================
+# =============================================
+# Define server logic
+# =============================================
+# =============================================
 server <- function(input, output) {
   
   ## pick random questions and display
   questions_to_rate <- reactive({
     # ignore <- input$new_questions  ### listen to button
-    
-    rand_questions <- c(21,11,31,41,1) + sample(c(0:9), 5)
-    rand_questions <- c(1,11,21,31,41)  #JES
-
     output[[paste0("question", 1)]] <- renderText(questionsList[rand_questions[1]])
     output[[paste0("question", 2)]] <- renderText(questionsList[rand_questions[2]])
     output[[paste0("question", 3)]] <- renderText(questionsList[rand_questions[3]])
@@ -77,50 +113,52 @@ server <- function(input, output) {
     
     rand_questions
   })
+
   
-  ### create and change recommender
+    
+  ### create and select recommender
   recom <- reactive({
-    Recommender(BFdata, method = input$select_algo)
+    # we fix algorithm to best performer vs accurate according to our modelling  
+    # Recommender(BFdata, method = input$select_algo)
+    Recommender(BFdata, method = "UBCF")
   })
-  
+
+
+      
   ### make recommendations
   output$question_recom <- renderTable({
-    
     ### read ratings
     ratings <- matrix(NA, nrow = 1, ncol = ncol(BFdata))
-    for(i in 1:5)
+    for(i in 1:5) {
       ratings[1, questions_to_rate()[i]] <- input[[paste0("slider", i)]]
+    }
     
     ### create recommendations
     pred <- predict(recom(), as(ratings, "realRatingMatrix"), n = 45)
     
-    vector_hiddenQuestions <- paste(names(questionsList[getList(pred)[[1]]]), questionsList[getList(pred)[[1]]])  #JES
-    
+    ### for academic purposes, we show predicted answers
+    vector_hiddenQuestions <- paste(names(questionsList[getList(pred)[[1]]]), questionsList[getList(pred)[[1]]])
+    vector_hiddenAnswers <- sprintf("%1.1f", getRatings(pred)[[1]])
     cbind('Hidden question' = vector_hiddenQuestions[order(vector_hiddenQuestions)],
-          'Predicted Rating' = sprintf("%1.1f", getRatings(pred)[[1]]))  #JES
+          'Predicted Rating' = vector_hiddenAnswers[order(vector_hiddenQuestions)])
   })
+
   
-  ### show usersresults
+  
+  ### show users results
   output$user_results <- renderTable({
-    
-    ### read ratings
-    traits <- c("Openess", "Conscientiousness", "Extroversion", "Agreeableness", "Natural Reactions")
-    ### descriptive texts for each trait
-    traits_texts <- c(
-      "Also often called Openness to Experience. People who score low tend to be traditional and conventional",
-      "Individuals who score high on this factor are careful and diligent. Low scorers are impulsive and disorganized",
-      "Surgency or Positive Emotionality. Individuals who score high on this one are outgoing and social. Individuals who score low tend to be shut ins",
-      "High in this factor are friendly and optimistic. Low scorers are critical and aggressive",
-      "Emotional Stability. Often referred as Neuroticism or Negative Emotionality (in these two cases interpretations are inverted, can be though of as the opposite of Emotional Stability")
-    
     ## Obtain predictions for each question so we can calculate 
     ### read ratings
     ratings <- matrix(NA, nrow = 1, ncol = ncol(BFdata))
-    for(i in 1:5)
+    for(i in 1:5) {
       ratings[1, questions_to_rate()[i]] <- input[[paste0("slider", i)]]
+      # if question entered is formulated as reverted, we transform it
+      if (rand_reverted_questions[i]) {
+        ratings[1, questions_to_rate()[i]] <- abs(6 - ratings[1, questions_to_rate()[i]])
+      }
+    }
     ### create recommendations
     pred <- predict(recom(), as(ratings, "realRatingMatrix"), n = 45)
-    
     # Collect entered and predicted ratings to prepare results calculation
     enteredQuestions <- dictionary[questions_to_rate()[1:5],1]
     enteredRatings <- c(input[[paste0("slider", 1)]],
@@ -140,31 +178,30 @@ server <- function(input, output) {
     # We use psych::scoreItems to calculate scores (i.e. mean per group taking sign into account)
     # Add last row that contains predicted+entered answers and calculate results (OCEAN) for all lines
     scoresfile <- scoreFast(keys.list, rbind(as(BFdata, "matrix"), allRatings))
-    # With all data + prediction scored together (n+1 rows matrix), calculate percentiles of the last row (results for the user) assuming normality and based in mean and stf deviation of the whole initial dataset
-    traitsMeans <- c(2.9595, 3.0666, 3.7736, 3.3661, 3.8989)
-    traitsSds <- c(0.91036, 0.85857, 0.72926, 0.73734, 0.63024)
-    names(traitsMeans) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
-    names(traitsSds) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
-    
-    # result_O <- round(pnorm(scoresfile[nrow(BFdata)+1,]["openess-A"], traitsMeans["openess_OPN"], traitsSds["openess_OPN"])*100,0)
-    # result_C <- round(pnorm(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"], traitsMeans["conscienciousness_CSN"], traitsSds["conscienciousness_CSN"])*100,0)
-    # result_E <- round(pnorm(scoresfile[nrow(BFdata)+1,]["extroversion-A"], traitsMeans["extroversion_EXT"], traitsSds["extroversion_EXT"])*100,0)
-    # result_A <- round(pnorm(scoresfile[nrow(BFdata)+1,]["agreeability-A"], traitsMeans["agreeability_AGR"], traitsSds["agreeability_AGR"])*100,0)
-    # result_N <- round(pnorm(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"], traitsMeans["natural_reactions_EST"], traitsSds["natural_reactions_EST"])*100,0)
-    
-    result_O <- paste(scoresfile[nrow(BFdata)+1,]["openess-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["openess-A"], traitsMeans["openess_OPN"], traitsSds["openess_OPN"])*100,0), sep=" // ")
-    result_C <- paste(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"], traitsMeans["conscienciousness_CSN"], traitsSds["conscienciousness_CSN"])*100,0), sep=" // ")
-    result_E <- paste(scoresfile[nrow(BFdata)+1,]["extroversion-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["extroversion-A"], traitsMeans["extroversion_EXT"], traitsSds["extroversion_EXT"])*100,0), sep=" // ")
-    result_A <- paste(scoresfile[nrow(BFdata)+1,]["agreeability-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["agreeability-A"], traitsMeans["agreeability_AGR"], traitsSds["agreeability_AGR"])*100,0), sep=" // ")
-    result_N <- paste(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"],round(pnorm(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"], traitsMeans["natural_reactions_EST"], traitsSds["natural_reactions_EST"])*100,0), sep=" // ")
-    
-    
+    # With all data + prediction scored together (n+1 rows matrix), calculate percentiles of the last row (results for the user) assuming normality and based in mean and std deviation of the whole initial dataset
+    # we assume answers are approx normal within each trait so we use pnorm based on distribution of all population per trait
+    result_O <- round(pnorm(scoresfile[nrow(BFdata)+1,]["openess-A"], traitsMeans["openess"], traitsSds["openess"])*100,0)
+    result_C <- round(pnorm(scoresfile[nrow(BFdata)+1,]["conscienciousness-A"], traitsMeans["conscienciousness"], traitsSds["conscienciousness"])*100,0)
+    result_E <- round(pnorm(scoresfile[nrow(BFdata)+1,]["extroversion-A"], traitsMeans["extroversion"], traitsSds["extroversion"])*100,0)
+    result_A <- round(pnorm(scoresfile[nrow(BFdata)+1,]["agreeability-A"], traitsMeans["agreeability"], traitsSds["agreeability"])*100,0)
+    result_N <- round(pnorm(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"], traitsMeans["natural_reactions"], traitsSds["natural_reactions"])*100,0)
     
     traits_percentiles <- c(result_O, result_C, result_E, result_A, result_N)
     cbind('Personality trait' = traits, 
           'Result' = traits_percentiles,
           'Interpretation' = traits_texts)
-  })
+      
+  })    
+
+  output$radar <- renderChartJSRadar({
+    tmpValues <- c(3.6, 4.2, 2.5, 4.8, 3.3)
+    userValues <- data.frame("Trait"=traits, 
+                             "Your Score" = round(100*pnorm(tmpValues, traitsMeans, traitsSds),0))
+    chartJSRadar(userValues[, c("Trait", "Your.Score")], 
+                   maxScale = 100, showToolTipLabel=TRUE)
+    })
+    
+
   
 }
 
