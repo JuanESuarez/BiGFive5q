@@ -8,35 +8,46 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, error = TRUE, warning=FALSE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	error = TRUE,
+	warning = FALSE
+)
 ```
 
 
-## 1 Introduction
-### Executive Summary
+# 1 Executive Summary
+
 In this project, ... 
+
 * Prestigio del test BigFive/OCEAN
-* Valor de los resultados aproximados VS “pesadez” de 50 preguntas = interés en lograr resultados aprox(*) con sólo 5 preguntas
-* (*): defino una función de Accuracy HighLow por trait acertando >=3 de 5 preguntas
+* Valor de los resultados aproximados VS “pesadez” de 50 preguntas = interés en lograr resultados aprox con sólo 5 preguntas -> defino una función de Accuracy HighLow por trait acertando >=3 de 5 preguntas
 
 OBJETIVOS:
-* 1) minimizar test
-* 2) hacerlo móvil
-* 3) preparar para vincular con otros datos
-* 4) medir y mantener alta accuracy
-* 5) preguntas seleccionadas... afán recopilatorio/constructivo VS random/fijo 
+
+1) minimizar test
+2) hacerlo móvil
+3) preparar para vincular con otros datos
+4) medir y mantener alta accuracy
+5) preguntas seleccionadas... afán recopilatorio/constructivo VS random/fijo 
 
 ORIGINALIDAD:
+
 * Adaptar el modelo de Recomendación (aunque la matriz no tenga sparsity)
 * Relleno de IBCF (si lo hago)
 * Versión “disclosed” para móvil
-* 1) usar recommender; 2) servir de “módulo” para futuras integraciones
+1) usar recommender
+2) servir de “módulo” para futuras integraciones
 
 PREMISAS:
+
 * no usar test para parámetros (uso sub-partición); 2) computabilidad local; 3) respeto estricto al test
 
-## 2 Understanding the data
-Exploration of the ...
+![Big Five infography](BigFiveInfographic.jpg)
+
+
+\pagebreak
+# 2 Exploratory Data Analysis
 
 * explicar prescriptores descartados (tiempos de carga, ubicación, etc)
 * criterio país
@@ -44,38 +55,6 @@ Exploration of the ...
 * correlaciones
 * gráficos de ratings
 
-## 3 Methods and train
-
-### 3.1 Strategy, process
-1) simplify prescriptors
-2) use questions as items for recommendation
-3) calculate OCEAN results
-4) measure accuracy
-5) optimize questions to show
-6) pre-load free fields
-7) publish shiny
-8) store results
-
--PARTITIONS
--FUNCIÓN ACCURACY (deciles)
--INICIAL: comprobar si “reverse questions” afectan al recommender (estudiar impacto en: 1)recommenderPrincipal; 2)recommenderShiny; 3)cálculoOCEANinicial; 3) cálculoOCEANshiny) || fórmula: abs(6-x)
--TRAIN: criterio selección preguntas (random? cor?)
--TRAIN: criterio # preguntas (5?)
--TRAIN: criterio algoritmo a usar (UIBF?)
--TRAIN: tamaño óptimo dataset
-
-### 3.2 The shiny application
--SHINY: registrar usuario, país y timestamp + vbles1:3
--SHINY: almacenar resultados
--SHINY: añadir traducción
--SHINY: crear un “submit” para queda el resultado sea “inamovible” (o explicar lo dejó así “interactivo” y mostrando las predicciones de preguntas con fines académicos +- “disclosed mode”)
-
-
-
-
--------------------------------------------------------------------
--------------------------------------------------------------------
--------------------------------------------------------------------
 
 ```{r block_1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ################################################################################
@@ -141,11 +120,7 @@ dictionary
 ```
 
 
-
-
-## Exploratory Data Analysis
-
-### Calculate scores for each observation based on its questions
+## Calculate scores for each observation based on its questions
 
 Version AS-IS: We score before change of "reverted questions"
 
@@ -189,9 +164,10 @@ df_scored_preReversion %>% ggplot() +
   labs(title="Distributions of Scores", x="Response Score")
 ```
 
-## Test reliability in each personality trait
 
-### Reliability (internal consistency)
+
+
+## Test Reliability in each personality trait (internal consistency)
 
 Questions of the test are grouped in 5 categories (personality trait). We can expect a high correlation (positive or negative) among the 10 questions in each group. We also expect also reliability alfa vualues. The Cronbach’s alpha coefficient measures reliability, or internal consistency, to see if multiple-question Likert scale surveys are reliable. Cronbach’s alpha will tell us how closely related a set of test items are as a group.
 https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/alpha
@@ -252,11 +228,12 @@ traitsAlphas %>%
 ```
 
 
-### Correlation of the answers to questions
+
+## Correlation of the answers to questions
 
 We calculate correlation among all questions. Some questions are reverted, but this affects only to the sign of the correlation.
 
-```{r block_4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_4a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Correlation calculation. Calculate global correlation matrix to see full landscape instead of just per trait
 corAllQuestions <- cor(df[,2:51])
 # Sample of values (two per trait)
@@ -277,9 +254,13 @@ cor.mtest <- function(mat, ...) {
   p.mat
 }
 p.mat <- cor.mtest(corAllQuestions)  # significance test
-# Correlation within same group:
-# Questions explitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). 
-# We see now two examples two different traits (groups). Correlation is clearly high within same group.
+```
+
+
+Correlation within same group: Questions explitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). We see now two examples two different traits (groups). Correlation is clearly high within same group.
+
+
+```{r block_4b, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 corrplot(corAllQuestions[1:10,1:10], 
          method = "circle", 
          type = "upper", 
@@ -320,8 +301,13 @@ corrplot(corAllQuestions[41:50,41:50],
          title =  "Trait: Openess", 
          p.mat = p.mat, sig.level = 0.01
          )
-# Correlation with other groups. However, we see also some other significant correlations of some questions with questions that "belong" to different traits. Since our challenge is preciselly to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
-# http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram
+```
+
+
+Correlation with other groups. However, we see also some other significant correlations of some questions with questions that "belong" to different traits. Since our challenge is preciselly to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. Ref: http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram
+
+
+```{r block_4c, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 corrplot(corAllQuestions, 
          method = "circle",
          type = "upper",
@@ -332,15 +318,48 @@ corrplot(corAllQuestions,
          )
 ```
 
-### Clean environment before training
+
 
 ```{r block_5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# Clean environment before training
 rm(questiondf, cronbach)
 rm(scoresfile, df_scored_preReversion, keys.list, buckets)
 ```
 
 
-## Data preparation for modeling
+
+\pagebreak
+# 3 Methods and train
+
+## 3.1 Strategy, process
+
+1) simplify prescriptors
+2) use questions as items for recommendation
+3) calculate OCEAN results
+4) measure accuracy
+5) optimize questions to show
+6) pre-load free fields
+7) publish shiny
+8) store results
+
+* PARTITIONS
+* FUNCIÓN ACCURACY (deciles)
+* INICIAL: comprobar si “reverse questions” afectan al recommender (estudiar impacto en: 
+
+1) recommenderPrincipal
+2)recommenderShiny
+3) cálculoOCEANinicial
+4) cálculoOCEANshiny || fórmula: abs(6-x)
+
+* TRAIN: criterio selección preguntas (random? cor?)
+* TRAIN: criterio # preguntas (5?)
+* TRAIN: criterio algoritmo a usar (UIBF?)
+* TRAIN: tamaño óptimo dataset
+
+
+
+
+## 3.2 Data preparation for modeling
 
 ### Reverted questions treatment
 
@@ -365,7 +384,6 @@ keys.list.allPositive <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OP
                               agreeability = c("AGR1", "AGR2", "AGR3", "AGR4", "AGR5", "AGR6", "AGR7", "AGR8", "AGR9", "AGR10"), 
                               natural_reactions = c("EST1","EST2","EST3","EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
 ```
-
 
 We see mean and standard deviation of each trait's questions
 
@@ -403,7 +421,8 @@ saveRDS(dictionary, "dictionary.rds")
 ```
 
 
-Separate data in partitions
+### Separate data in partitions
+
 Create Train and Test partitions: Validation (Test) set will be 20% of data
 
 ```{r block_10, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -417,7 +436,7 @@ rm(test_index)
 ```
 
 
-## Training and prediction
+## 3.3 Training and prediction
 
 ### Accuracy measurement: metrics of prediction success
 
@@ -429,9 +448,7 @@ We need to define clearly how our model increases the performance of prediction.
 * "Hits HigLow all traits": average of "Hits quartile" for all traits of an observation (test) 
 * "3+ hits HighLow" for all traits: Scores of three or more traits predict correctly halves 
 
-Accuracy measurement: metrics of prediction success
-
-As reference for accuracy improvement, we will estimate what the Scores would be if using just a random criteria for predicting answers to each question. The random distribution of answers to 50 questions with 5 possible answers same probability (1/5) follow a binomial (Bernouilli) pattern. However, due to the calculations required for our accuracy indicators, we will code a Montecarlo simulation of a random selection, which will allow us to simulate results. These accuracies will be considered then as "base reference" for further improvements during modeling process.
+As reference for accuracy improvement, we will estimate what the Scores would be if using just a random criteria for predicting answers to each question. The random distribution of answers to 50 questions with 5 possible answers same probability (1/5) follow a binomial (Bernouilli) pattern. However, due to the calculations required for our accuracy indicators, we will code a **Montecarlo** simulation of a random selection, which will allow us to simulate results. These accuracies will be considered then as "base reference" for further improvements during modeling process.
 
 This function adjusts random score taking into account that answers of one of every 10 question is known. For simplicity, we assume a linear improvement of accuracy for 1/10 and correct by chance of randomly hitting (1/5) 
 
@@ -485,7 +502,8 @@ analysis_results <- data_frame(
 analysis_results %>% knitr::kable(digits = 4)
 ```
 
-## Questions selection: minimum combined correlation algorithm
+
+### Questions selection: minimum combined correlation algorithm
 
 Our model relies on only five questions, out of 50, to predict the other 45. This means the best possible selection of the five questions we get real aswer for is very important to better predict the others. However, choosing just the same apparent best combination (always the same for given dataset) seems not to be the most open, realistic, rich option, since in case of moving this model into production, would result in a very poor diversity of input rsults, which long term would drive to worse results and lack of diversity. Thus, we will state as premise that, one of the questions to get real answer from, must be randomly selected (seed question), whilst the other four ones can be generated based on expected best results.
 
@@ -527,7 +545,7 @@ chosen_questions <- which(colnames(BF_test[,2:51]) %in% potentialQuestionsSets[w
 chosen_questions
 ```
 
-## Loop available recommendation algorithms
+### Loop available recommendation algorithms
 
 Our approach for predicting 45 answers (item) of an user that actually answered only to 5, will be to a Recommendation Model, based in the library Recommederlab. Tha basic idea is to consider Users (those who answer) and Items (questions) and apply some of the methods of standard recommendation. However, there are some singularities in our respect to a typical movie/book recommenadtion case:
 
@@ -710,8 +728,36 @@ for (a in 1:length(methods_choice)) {
 ```
 
 
+\pagebreak
+# 4 The shiny application
 
-## 4 Results
+In addition to the model created based on existing dataset, we create also an interactive tool to show in practice how prediction works. The tool is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps. It is basically an interactive web page to allow any person to answer 5 randomly selected questions, and based on them, estimated personality traits Bif Five Scores by *predicting* al other 45 remaining question using our recommendation model.
+
+
+![Screenshot1 of interactive tool](shinnyapp_image1.jpg) ![Screenshot2 of interactive tool](shinnyapp_image2.jpg)
+
+
+For practical and academic reasons, tool is simplified to allow wide interactive testing and avoid any data protection issues .some of the simplification changes:
+
+* An user can repeat test as many times as desired.
+* Algorithm implemented is UBCF (second best in our study) instead of ALS for interactivity performance.
+* Questions are chosen randomly instead of using our just developed *Minimum Combined Correlation Algorithm*
+* Most the most important... all *hidden* predicted question's answers are shown for instructional purposes
+
+This promising tools inspires many developments to incorporate nice functionalities, potentially very useful in combination with other tools for other specific needs, Some if them:
+
+* registrar usuario
+* almacenar resultados
+* añadir traducción
+* crear un “submit” para queda el resultado sea “inamovible” (o explicar lo dejó así “interactivo” y mostrando las predicciones de preguntas con fines académicos +- “disclosed mode”)
+* añadir otras preguntas de control/clasificación combinadas (...¿mes nacim.? ¿do you like cheese?...) + país + IP + timestamp + vbles1:3
+* combianr con outcomes conocidos (por ejemplo ADE-Univ. Comillas)
+* prohibir repetición de entradas por el mismo usuario
+
+
+\pagebreak
+# 5 Results
+
 We have got aa appretiable result just with Phase 1 Model, and in case we have event time data available for cases to predict, we will obtain even more improvement on RMSE. As a results sumamry, running the final algorithm of our modelling on the –validation– set yields the following rating:
 
 We can know compare how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach
@@ -732,25 +778,23 @@ table_results %>% knitr::kable(digits = 4)
 ```
 
 
-## 5 Conclusion
+\pagebreak
+# 6 Conclusion
 We have implemented a model that ...
 
 Finally, we can mention some potential improvements for future versions:
--Optimizar tuning Recommender (evaluationScheme, k-fold, bootstrap, no-sparse, ) usando sub-particiones
--Probar aumentando el tamaño del dataset (usando sub-participes de training)
--Ensemble de mejor algoritmo/trait
--Negociar con ADE para crear modelo de rendimiento académico “5q”
--Mantener random de preguntas (para diversificar datos obtenidos) pero mejorar selección de otras preguntas por <<correlación ó CART
--Posibilidad de >5 preguntas
--Bias Month, Country (mostrar en EDA)
--Mejoras SHINY: multialgoritmo_ensemble, botónSubmit, añadirPreguntasControl, almacenarResultados_ojoGDPR, ...
--Vincular las 5 preguntas a otros juegos de preguntas/prescriptores para obtener in modelo único con outcome OCEAN
+
+* Optimizar tuning Recommender (evaluationScheme, k-fold, bootstrap, no-sparse, ) usando sub-particiones
+* Probar aumentando el tamaño del dataset (usando sub-participes de training)
+* Ensemble de mejor algoritmo/trait
+* Negociar con ADE para crear modelo de rendimiento académico “5q”
+* Mantener random de preguntas (para diversificar datos obtenidos) pero mejorar selección de otras preguntas por <<correlación ó CART
+* Posibilidad de >5 preguntas
+* Bias Month, Country (mostrar en EDA)
+* Mejoras SHINY: multialgoritmo_ensemble, botónSubmit, añadirPreguntasControl, almacenarResultados_ojoGDPR, ...
+* Vincular las 5 preguntas a otros juegos de preguntas/prescriptores para obtener in modelo único con outcome OCEAN
 
 As a final conclusion, we can state we have reached challenge goal in terms of project requirements and accuracy for the validation set provided.
-
-
-
-
 
 
 
