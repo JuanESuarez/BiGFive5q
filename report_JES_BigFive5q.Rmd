@@ -18,32 +18,31 @@ knitr::opts_chunk$set(
 
 # 1 Executive Summary
 
-In this project, ... 
+This project uses prediction techniques to simplify the results obtention for the well-known "Big Five" personality traits determination test. The goal is to reduce as much as possible the input from a given user so we can predict final score as accuratedly as possible. Thus, less length, effort and time of test resolution wil probably make it easier to be integrated in other processes where estimation of personality characteristics of an individual can be useful.
 
-* Prestigio del test BigFive/OCEAN
-* Valor de los resultados aproximados VS “pesadez” de 50 preguntas = interés en lograr resultados aprox con sólo 5 preguntas -> defino una función de Accuracy HighLow por trait acertando >=3 de 5 preguntas
+This test is made of 50 questions grouped in five *personality traits*. All questions must be answered from 1 (Strongly Disagree) to 5 (Strongly Agree), being some of them "reverted" (formulated as negative). The percentile of the average of each 10-questions group is the final score for that trait. Our **goal is to use only five questions to predict all 45 others and therefore final scores for each trait**, benefiting therefore of such a very light approach to get results.
 
-OBJETIVOS:
+**Measurement of the accuracy** of the model will require to define and calculate indicators of how good the model works in predicting the right trait score for an individual. The fact result is a set of five numbers "percentiles" will make us define metrics for assessing how close predictions are to real results.
 
-1) minimizar test
-2) hacerlo móvil
-3) preparar para vincular con otros datos
-4) medir y mantener alta accuracy
-5) preguntas seleccionadas... afán recopilatorio/constructivo VS random/fijo 
+There are some clear **premises we will follow for this project**:
 
-ORIGINALIDAD:
+* Measurable: Strict measurement of results, based on a clear definition of the accuracy obtained.
+* Usuful: Prepare model to be usuful for further developments/integrations, i.e. make it as a *pluggable module* to be integrated in other systems. For example, instead of showing always "optimal" questions to be answered, we prefer to make them -partially- random, so a deployment at bigger scale might benefit of variability.
+* Indepentent validation: Never use validation (test) data partition to estimate parameters of select any criteria during training process
+* Computability: project must be deep in calculation but affordable within a local environment in terms of performance. This means that we will reduce our dataset during some stages, but a wider execution can be always an option without need of changing source code, just the parameter.
 
-* Adaptar el modelo de Recomendación (aunque la matriz no tenga sparsity)
-* Relleno de IBCF (si lo hago)
-* Versión “disclosed” para móvil
-1) usar recommender
-2) servir de “módulo” para futuras integraciones
+There are several **original aspects** on this project:
 
-PREMISAS:
+* Use Recommender: To take advantage of a standard "recommendation model", adapting some concepts to use classical "User x Item" as inspiration for a "User x Question/Trait" structure. The advantage is to use strong prediction tool (i.e. Recommenderlab, etc.), but on the other side fact like the lack of matrix sparcicity or the very "vertical" shape of the ratings matrix (approx. 10^6 users x only 50 columns) require specific attention during the model implementation.
+* An app to play: To create an interactive, open access, graphical app tool to facilitate understanding of the concept and even disclosing some of the key prediction steps followed.
+* Questions selection: Our own algorithm to optimize selection of questions to get answer for, so the change (to ensure varibility on data retrieval), whilst optizing combiantion so final accuracy is best.
 
-* no usar test para parámetros (uso sub-partición); 2) computabilidad local; 3) respeto estricto al test
 
-![Big Five infography](BigFiveInfographic.jpg)
+The Big Five personality traits, also known as the five-factor model (FFM) and the OCEAN model, is a taxonomy, or grouping, for personality traits. When factor analysis (a statistical technique) is applied to personality survey data, some words used to describe aspects of personality are often applied to the same person. For example, someone described as conscientious is more likely to be described as "always prepared" rather than "messy". This theory is based therefore on the association between words but not on neuropsychological experiments. This theory uses descriptors of common language and therefore suggests five broad dimensions commonly used to describe the human personality and psyche.
+
+
+
+![Big Five infography](TestIntro.png)
 
 
 \pagebreak
@@ -734,7 +733,7 @@ for (a in 1:length(methods_choice)) {
 In addition to the model created based on existing dataset, we create also an interactive tool to show in practice how prediction works. The tool is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps. It is basically an interactive web page to allow any person to answer 5 randomly selected questions, and based on them, estimated personality traits Bif Five Scores by *predicting* al other 45 remaining question using our recommendation model.
 
 
-![Screenshot1 of interactive tool](shinnyapp_image1.jpg) ![Screenshot2 of interactive tool](shinnyapp_image2.jpg)
+![Screenshot1 of interactive tool](shinnyapp_image1.jpg)
 
 
 For practical and academic reasons, tool is simplified to allow wide interactive testing and avoid any data protection issues .some of the simplification changes:
