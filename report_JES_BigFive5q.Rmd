@@ -392,20 +392,18 @@ rm(scoresfile, df_scored_preReversion, keys.list, buckets)
 
 ## 3.1 Strategy, process
 
-Our challenge is to predict the answers of 45 questions based on the answers to 5 questions we know. Total number of questions is exactly 50, so our matrix of users versus item (questions) is fully filled and we find no sparcity. We also observe that the shape of this matrix is pretty vertical, with around rows by only fifty columns. Despite of this singularities, this model seems to reasonable fit a "reccomendation system" approach. We will pursue on that and take advantage of the already prebouild strong tools existing in R, specifically the Recommenderlab package.
+Our challenge is to predict the answers of 45 questions based on the answers to 5 questions we know. Total number of questions is exactly 50, so our matrix of users versus item (questions) is fully filled and we find no *sparcity*. We also observe that the shape of this matrix is pretty vertical, with around rows by only fifty columns. Despite of this singularities, this model seems to reasonable fit a "recommendation system" approach. We will pursue on that and take advantage of the already prebouild strong tools existing in R, specifically the Recommenderlab package.
 
 Nevertheless, some preparation steps will be necessary to *adapt* our problem to the functionalities the standard recommender tool provides.
 
+* Firstly, we need to prepare data for modeling, taking into account that our recommender algorithm will ignore **reverted effect on questions**, so we need to invert their existing answers in advance to make data homogeneous. Also, the **size of base dataset** is excessive in terms of computability in a local environment so we will make a random reduction of it - due to the high density of our Users x Questions matrix, this size reduction will not have dramatics effect in the decrease of our results, though of course could be reconfigured if more powerful systems would run the model.
 
-Data preparation for modeling
- Reverted questions treatment
- Dataset size reduction
- Save input data for shiny app
- Separate data in partitions
-Training and prediction
- Accuracy measurement: metrics of prediction success
- Questions selection: minimum combined correlation algorithm
- Loop available recommendation algorithms
+We will also, in support of our interactive app, to extract data to make it **available within de shinyapps environment**. 
+
+A key step will be then to separate dataset in two (**train and validation**) partitions for fulfill machine learning paradigm. For clarity, we will not use *scheme* options of recommenderlab package but to directly build, manage and measure these partitions.
+
+Once data are ready, training and prediction and measurement process starts. First, we need to clearly define **what is and how to measure accuracy** of our model, as easily as possible, taking into account the relative complexity of the calculation of the five resulting scores.  A very important step of the modeling will be to build an **algorithm to select what five questions we want to retrieve** answers from. This process must respect a random base to ensure eventual variability in results capture, but optimizing the choice to improve model accuracy.  Once done all above steps, we will **run our recommender algorithms**, doing training of each model, prediction, calculation of final scores and storing results for comparison.
+
  
 
 ## 3.2 Data preparation for modeling
