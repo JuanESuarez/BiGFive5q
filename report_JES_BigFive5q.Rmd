@@ -38,21 +38,66 @@ There are several **original aspects** on this project:
 * Questions selection: Our own algorithm to optimize selection of questions to get answer for, so the change (to ensure varibility on data retrieval), whilst optizing combiantion so final accuracy is best.
 
 
-The Big Five personality traits, also known as the five-factor model (FFM) and the OCEAN model, is a taxonomy, or grouping, for personality traits. When factor analysis (a statistical technique) is applied to personality survey data, some words used to describe aspects of personality are often applied to the same person. For example, someone described as conscientious is more likely to be described as "always prepared" rather than "messy". This theory is based therefore on the association between words but not on neuropsychological experiments. This theory uses descriptors of common language and therefore suggests five broad dimensions commonly used to describe the human personality and psyche.
+The Big Five personality traits, also known as the five-factor model (FFM) and the OCEAN model, is a taxonomy, or grouping, for personality traits. When factor analysis (a statistical technique) is applied to personality survey data, some words used to describe aspects of personality are often applied to the same person. For example, someone described as conscientious is more likely to be described as "always prepared" rather than "messy".
 
 
 
 ![Big Five infography](TestIntro.png)
 
+This theory is based therefore on the association between words but not on neuropsychological experiments. This theory uses descriptors of common language and therefore suggests five broad dimensions commonly used to describe the human personality and psyche.
+
 
 \pagebreak
 # 2 Exploratory Data Analysis
 
-* explicar prescriptores descartados (tiempos de carga, ubicación, etc)
-* criterio país
-* criterios año y mes
-* correlaciones
-* gráficos de ratings
+This project is based in the "Big Five Personality Test. 1M Answers to 50 personality items, and technical information" dataset. These data were collected (2016-2018) through an interactive on-line personality test and it contains:
+
+* 1015341 records (tests).
+* 110 columns of data, 50 of them answers (1=Strongly Disagree, 3=Neutral, 5=Strongly Agree) of test questions, and all others containing country, location, load date and load/response time for each question.
+* A codebook detailing literal wording of each one of the 50 questions.
+
+The personality test was constructed with the "Big-Five Factor Markers" from the International Personality Item Pool (https://ipip.ori.org/newBigFive5broadKey.htm). Participants were informed that their responses would be recorded and used for research at the beginning of the test, and asked to confirm their consent at the end of the test.
+
+For our approach to the model we will discard country, location, and load/response time to questions, so we focus directly on the questions and their answers. As we will remark in the Conclusions chapter, there are interesting possibilities for developing the project using these data, but they are out of the scope of this project. This reduction in the number of prescriptors will significantly reduce the size of our dataset.
+
+## Data load strategy
+
+Data are located in Kaggle site (https://www.kaggle.com/tunguz/big-five-personality-test/download). Data size in .CSV is 396 MB, so we will, as a previous step, load, select and convert them to .rds, so a very significant size reduction is obtained to 21 MB full dataset. The code to connect directly to Kaggle server requires an API and some specific coding, so for simplification, we have previously downloaded data locally and saved to a .rds file in directory ./data-source. Code to perform this preprocess and storage is available:
+
+```{r block_1a, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
+# Read Kaggle dataset copied to local directory
+#
+# Answers to test data
+# tab delimited, and  our int columns are character, perhaps because of the nulls!
+df <- read.csv("./data_source/data-final.csv", sep="\t", stringsAsFactors = FALSE, na.strings=c("NA","NaN", " ", "NULL"))
+# We select relevant columns to use
+df <- df %>% select(c(1:50), dateload, country) %>% rownames_to_column('userId') %>%
+  mutate(Month = month(dateload), Year = year(dateload)) %>%
+  select(-dateload)
+# Remove rows containing any NA
+df <- na.omit(df)
+# Remove any value not between 1 and 5 in the answers columns
+df <- df %>% filter_at(vars(2:51), all_vars((.) %in% c(1:5)))
+#
+# Let's also load up the questions from the data dictionary
+dictionary <-
+  read_table("./data_source/codebook.txt", skip=5) %>%
+  separate(1, sep="\t", extra="merge", into=c("ID", "Question")) %>%
+  data.frame() %>% top_n(50)
+
+##########################################################
+# Save .RDS input data to local files
+##########################################################
+saveRDS(df, "./data_source/BFtests.rds")
+saveRDS(dictionary, "./data_source/dictionary.rds")
+```
+
+However, it is not necessary to run the this preload to run project, since all two referred input datasets are already, and publicly, available:
+
+./data-source/BFdata.rds
+
+./data-source/dictionary.rds
+
 
 
 ```{r block_1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -119,11 +164,10 @@ dictionary
 ```
 
 
-## Calculate scores for each observation based on its questions
+## Distribution of scores per trait
 
-Version AS-IS: We score before change of "reverted questions"
+We will refer as *Scores" to the result (in percentile) of the average of answers (1 to 5 as possible values) corresponding to the ten questions forming each trait. This must be done considering that part of the questions are formualted "reverted" according to published test definition. 
 
-Scoring analysis requires calculation of each trait score based on its question's answers. Process is to obtain the average within group (taking sign for reverted questions into account), and the obtain the percentile of that value (using as reference the whole population of answers)
 
 ```{r block_2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # This list identifies each column to its corresponding group and informs of the sign (to revert if necessary) based in our previous analysis of correlation
@@ -132,8 +176,12 @@ keys.list <- list(openess = c("OPN1","-OPN2","OPN3","-OPN4","OPN5","-OPN6","OPN7
                   extroversion = c("EXT1","-EXT2","EXT3","-EXT4","EXT5", "-EXT6", "EXT7", "-EXT8", "EXT9", "-EXT10"), 
                   agreeability = c("-AGR1", "AGR2", "-AGR3", "AGR4", "-AGR5", "AGR6", "-AGR7", "AGR8", "AGR9", "AGR10"), 
                   natural_reactions = c("EST1","-EST2","EST3","-EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
-# We use psych::scoreItems to calculate scores (i.e. mean per group taking sign into account)
-# See: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/scoreItems
+
+```
+
+since this type of scoring is very frequent in psychometrics, we will take advantage of the package **psych**. Its function **scoreItems** will directly calculate scores (i.e. mean per group taking sign into account). Detailed documentation on this function can be found: See: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/scoreItems
+
+```{r block_2a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 scoresfile <- scoreFast(keys.list, df) #scoresfile <- scoreVeryFast(keys.list, df)
 # Add calculated columns (scores)
 df_scored_preReversion <- cbind(df, scoresfile)
@@ -150,9 +198,13 @@ df_scored_preReversion <- df_scored_preReversion %>% mutate(
   `extroversion-P` = round(P3(`extroversion-A`)*100), 
   `agreeability-P` = round(P4(`agreeability-A`)*100), 
   `natural_reactions-P` = round(P5(`natural_reactions-A`)*100) )
-###########################
-# Scores visualization
-# First, we take a look at the different indexes against each other, to see what sort of interrelationships they might have.
+
+```
+
+We now visualize how some of the traits tend to be valuated higher than others. For a global analysis, a normalization should we adequate, but we are now focusing in individual study of questions & traits, so the most significant interpretation is that each one of them is approxmimately normal, which be usuful later for percentile calculations.
+
+```{r block_2b, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# We take a look at the different indexes against each other, to see what sort of interrelationships they might have.
 df_scored_preReversion %>% ggplot() +
   theme_bw() +
   geom_density(aes(x=`extroversion-A`, fill = "Extroversion"), alpha=.2)+
@@ -162,7 +214,6 @@ df_scored_preReversion %>% ggplot() +
   geom_density(aes(x=`openess-A`, fill = "Openess"), alpha = .2)+
   labs(title="Distributions of Scores", x="Response Score")
 ```
-
 
 
 
