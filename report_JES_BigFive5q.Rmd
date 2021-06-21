@@ -166,7 +166,7 @@ dictionary
 
 ## Distribution of scores per trait
 
-We will refer as *Scores" to the result (in percentile) of the average of answers (1 to 5 as possible values) corresponding to the ten questions forming each trait. This must be done considering that part of the questions are formualted "reverted" according to published test definition. 
+We will refer as *Scores* to the result (in percentile) of the average of answers (1 to 5 as possible values) corresponding to the ten questions forming each trait. This must be done considering that part of the questions are formualted "reverted" according to published test definition. 
 
 
 ```{r block_2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -179,7 +179,7 @@ keys.list <- list(openess = c("OPN1","-OPN2","OPN3","-OPN4","OPN5","-OPN6","OPN7
 
 ```
 
-since this type of scoring is very frequent in psychometrics, we will take advantage of the package **psych**. Its function **scoreItems** will directly calculate scores (i.e. mean per group taking sign into account). Detailed documentation on this function can be found: See: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/scoreItems
+Since this type of scoring is very frequent in psychometrics, we will take advantage of the package **psych**. Its function **scoreItems** will directly calculate scores (i.e. mean per group taking sign into account). Detailed documentation on this function can be found: See: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/scoreItems
 
 ```{r block_2a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 scoresfile <- scoreFast(keys.list, df) #scoresfile <- scoreVeryFast(keys.list, df)
@@ -219,8 +219,11 @@ df_scored_preReversion %>% ggplot() +
 
 ## Test Reliability in each personality trait (internal consistency)
 
-Questions of the test are grouped in 5 categories (personality trait). We can expect a high correlation (positive or negative) among the 10 questions in each group. We also expect also reliability alfa vualues. The Cronbach’s alpha coefficient measures reliability, or internal consistency, to see if multiple-question Likert scale surveys are reliable. Cronbach’s alpha will tell us how closely related a set of test items are as a group.
-https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/alpha
+We are now interested in assessing the internal consistency of the test, i.e. to know at what extent our questions are related, behave similarly, when they belong to same group/trait.
+
+The Cronbach’s alpha coefficient measures reliability, or internal consistency, to see if multiple-question Likert scale surveys are reliable. Cronbach’s alpha will tell us how closely related a set of test items are as a group. More details on Cronback's alpha can be found here: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/alpha
+
+According to this coefficient generalized interpretation, values of alpha between 0.8 and 0.9 are considered "Good Internal Consistency", while alpha greater than 0.9 means an "Excellent Internal consistency" situation.
 
 ```{r block_3, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Preparation, questions structure
@@ -251,8 +254,12 @@ for(i in 1:length(buckets)){
 questionsSigns
 
 # Cronbach's alpha per trait's questions
-# We want to visualize alphas: value 0.8 >= alpha > 0.9 is generally interpreted "Good Internal Consistency", and alfa >= 0.9 as "Excellent Internal consistency"
 rownames(traitsAlphas) <- NULL
+```
+
+We easily visualize that, despite of some differences among traits, all of them fall in an, at least, "high integrity" interval:
+
+```{r block_3a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Assign question's group
 traitsAlphas <- cbind(Group = paste("Questions_", seq(1,5,1), "X", sep=""), traitsAlphas)
 tmpAvg <- mean(traitsAlphas$raw_alpha)
@@ -281,7 +288,9 @@ traitsAlphas %>%
 
 ## Correlation of the answers to questions
 
-We calculate correlation among all questions. Some questions are reverted, but this affects only to the sign of the correlation.
+A key aspect for understanding how some questions relate to other, even belong to a different group, is their correlation. It is intuitive to think in correlation of questions as a clear indicator of how unknown values (unanswered question) can be predicted based in known answers to other questions that usually correlate.
+
+So, let's calculate correlation matrix among all questions to visualize global data pattern. Thus, we have also a have a good source for further calculations on what questions must be chosen to answers when there is a possibility to do it. Note some questions are reverted, but this is not relevant for this exploratory analysis, since it affects only to the sign of the correlation, not its absolute value.
 
 ```{r block_4a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Correlation calculation. Calculate global correlation matrix to see full landscape instead of just per trait
@@ -307,7 +316,7 @@ p.mat <- cor.mtest(corAllQuestions)  # significance test
 ```
 
 
-Correlation within same group: Questions explitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). We see now two examples two different traits (groups). Correlation is clearly high within same group.
+Correlation within same group: Questions explicitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). We see different traits (groups). Correlation is clearly high within same group.
 
 
 ```{r block_4b, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -354,7 +363,7 @@ corrplot(corAllQuestions[41:50,41:50],
 ```
 
 
-Correlation with other groups. However, we see also some other significant correlations of some questions with questions that "belong" to different traits. Since our challenge is preciselly to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. Ref: http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram
+Regarding behavour among groups, we see also some other **significant correlations** (and of course also lack of them) of some questions with questions that "belong" to different traits. Since our challenge is precisely to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
 
 
 ```{r block_4c, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
