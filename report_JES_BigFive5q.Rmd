@@ -392,31 +392,21 @@ rm(scoresfile, df_scored_preReversion, keys.list, buckets)
 
 ## 3.1 Strategy, process
 
-1) simplify prescriptors
-2) use questions as items for recommendation
-3) calculate OCEAN results
-4) measure accuracy
-5) optimize questions to show
-6) pre-load free fields
-7) publish shiny
-8) store results
+Our challenge is to predict the answers of 45 questions based on the answers to 5 questions we know. Total number of questions is exactly 50, so our matrix of users versus item (questions) is fully filled and we find no sparcity. We also observe that the shape of this matrix is pretty vertical, with around rows by only fifty columns. Despite of this singularities, this model seems to reasonable fit a "reccomendation system" approach. We will pursue on that and take advantage of the already prebouild strong tools existing in R, specifically the Recommenderlab package.
 
-* PARTITIONS
-* FUNCIÓN ACCURACY (deciles)
-* INICIAL: comprobar si “reverse questions” afectan al recommender (estudiar impacto en: 
-
-1) recommenderPrincipal
-2)recommenderShiny
-3) cálculoOCEANinicial
-4) cálculoOCEANshiny || fórmula: abs(6-x)
-
-* TRAIN: criterio selección preguntas (random? cor?)
-* TRAIN: criterio # preguntas (5?)
-* TRAIN: criterio algoritmo a usar (UIBF?)
-* TRAIN: tamaño óptimo dataset
+Nevertheless, some preparation steps will be necessary to *adapt* our problem to the functionalities the standard recommender tool provides.
 
 
-
+Data preparation for modeling
+ Reverted questions treatment
+ Dataset size reduction
+ Save input data for shiny app
+ Separate data in partitions
+Training and prediction
+ Accuracy measurement: metrics of prediction success
+ Questions selection: minimum combined correlation algorithm
+ Loop available recommendation algorithms
+ 
 
 ## 3.2 Data preparation for modeling
 
