@@ -467,7 +467,7 @@ chosen_questions
 # we prepare methods to run
 
 methods_choice <- list(
-  # list("ALS", "ALS" = list(NULL)),
+  list("ALS", "ALS" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50))
 )
 

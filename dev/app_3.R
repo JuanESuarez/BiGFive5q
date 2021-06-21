@@ -82,7 +82,7 @@ ui <- fluidPage(
                 mainPanel(h3("Your score"),
                           chartJSRadarOutput("radar_results", width = "450", height = "300"), width = 7,
                           tableOutput("explain_results"),                           
-                          h4("Detail of predictions per question - for academic purpose:"),
+                          h4("Detail of predictions per questions for academic purposes:"),
                           tableOutput("question_recom"),
                           p("Created by JuanESuarez || ",
                             a("databellum", href="http://databellum.es")
@@ -135,10 +135,10 @@ server <- function(input, output) {
     pred <- predict(recom(), as(ratings, "realRatingMatrix"), n = 45)
     
     ### for academic purposes, we show predicted answers
-    vector_hiddenQuestions <- questionsList[getList(pred)[[1]]]
+    vector_hiddenQuestions <- paste(names(questionsList[getList(pred)[[1]]]), questionsList[getList(pred)[[1]]])
     vector_hiddenAnswers <- sprintf("%1.1f", getRatings(pred)[[1]])
-    cbind('Hidden question' = vector_hiddenQuestions,
-          'Predicted Rating' = vector_hiddenAnswers)
+    cbind('Hidden question' = vector_hiddenQuestions[order(vector_hiddenQuestions)],
+          'Predicted Rating' = vector_hiddenAnswers[order(vector_hiddenQuestions)])
   })
 
   
@@ -146,7 +146,7 @@ server <- function(input, output) {
   ### show users results
   output$explain_results <- renderTable({
     ## Show meaning of each personality trait score. Constant data
-    cbind('Personality trait' = paste(substr(traits,1,1), "=", traits), 
+    cbind('Personality trait' = traits, 
           'Interpretation' = traits_texts)
       
   })    
@@ -193,11 +193,11 @@ server <- function(input, output) {
     
     traits_percentiles <- c(result_O, result_C, result_E, result_A, result_N)
 
-    userValues <- data.frame("Trait"=substr(traits,1,1), 
+    userValues <- data.frame("Trait"=traits, 
                              "Your Score" = traits_percentiles)
     chartJSRadar(userValues[, c("Trait", "Your.Score")], 
                  maxScale = 100, scaleStepWidth = 25, 
-                 labelSize = 30, 
+                 labelSize = 15, 
                  responsive = TRUE, 
                  showLegend = FALSE, 
                  polyAlpha = 0.5, 
@@ -210,3 +210,4 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
