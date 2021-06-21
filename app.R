@@ -76,7 +76,7 @@ ui <- fluidPage(
                   # selectInput("select_algo", label = p("Select algorithm"),
                   #             choices = list("POPULAR", "UBCF", "SVD", "RANDOM"),
                   #             selected = "UBCF")
-
+                  
                 ),
                 
                 mainPanel(h3("Your score"),
@@ -111,18 +111,18 @@ server <- function(input, output) {
     
     rand_questions
   })
-
   
-    
+  
+  
   ### create and select recommender
   recom <- reactive({
     # we fix algorithm to best performer vs accurate according to our modelling  
     # Recommender(BFdata, method = input$select_algo)
     Recommender(BFdata, method = "UBCF")
   })
-
-
-      
+  
+  
+  
   ### make recommendations
   output$question_recom <- renderTable({
     ### read ratings
@@ -140,7 +140,7 @@ server <- function(input, output) {
     cbind('Hidden question' = vector_hiddenQuestions,
           'Predicted Rating' = vector_hiddenAnswers)
   })
-
+  
   
   
   ### show users results
@@ -148,9 +148,9 @@ server <- function(input, output) {
     ## Show meaning of each personality trait score. Constant data
     cbind('Personality trait' = paste(substr(traits,1,1), "=", traits), 
           'Interpretation' = traits_texts)
-      
+    
   })    
-
+  
   output$radar_results <- renderChartJSRadar({
     ## Obtain predictions for each question so we can calculate 
     ### read ratings
@@ -192,7 +192,7 @@ server <- function(input, output) {
     result_N <- round(pnorm(scoresfile[nrow(BFdata)+1,]["natural_reactions-A"], traitsMeans["natural_reactions"], traitsSds["natural_reactions"])*100,0)
     
     traits_percentiles <- c(result_O, result_C, result_E, result_A, result_N)
-
+    
     userValues <- data.frame("Trait"=substr(traits,1,1), 
                              "Your Score" = traits_percentiles)
     chartJSRadar(userValues[, c("Trait", "Your.Score")], 
@@ -202,9 +202,9 @@ server <- function(input, output) {
                  showLegend = FALSE, 
                  polyAlpha = 0.5, 
                  showToolTipLabel=TRUE)
-    })
-    
-
+  })
+  
+  
   
 }
 
