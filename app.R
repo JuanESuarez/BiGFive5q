@@ -5,8 +5,7 @@ library(shiny)
 library(recommenderlab)
 library(psych)
 
-# install.packages("ECharts2Shiny")
-library(ECharts2Shiny)
+# install.packages("radarchart")
 library(radarchart)
 
 # =============================================
