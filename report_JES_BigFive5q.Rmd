@@ -463,8 +463,8 @@ For this tool to work we pass reduced version of the dataseet to allow training 
 
 ```{r block_9, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 BFdata <- as(data.matrix(df[,2:51]), "realRatingMatrix")
-saveRDS(BFdata, "BFdata.rds")
-saveRDS(dictionary, "dictionary.rds")
+saveRDS(BFdata, "./data_source/BFdata.rds")
+saveRDS(dictionary, "./data_source/dictionary.rds")
 ```
 
 

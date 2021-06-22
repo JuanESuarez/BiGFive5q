@@ -9,8 +9,8 @@ library(radarchart)
 
 # =============================================
 # Data load and initialization
-BFdata <- readRDS("BFdata.rds")
-dictionary <- readRDS("dictionary.rds")
+BFdata <- readRDS("./data_source/BFdata.rds")
+dictionary <- readRDS("./data_source/dictionary.rds")
 
 # Make sure requirements are met
 req(BFdata)
@@ -85,7 +85,7 @@ ui <- fluidPage(
                           h4("Detail of predictions per question - for academic purpose:"),
                           tableOutput("question_recom"),
                           p("Created by JuanESuarez || ",
-                            a("databellum", href="http://databellum.es")
+                            a("JES", href="http://JuanESuarez.net")
                           )
                 )
   )
