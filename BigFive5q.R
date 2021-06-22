@@ -319,8 +319,8 @@ df <- df[sample(nrow(df), nObservsDevelopment), ]
 # The shiny app is an interactive implementation of this model. It simplifies some parts of the process and shows prediction generated for each questions, as well as the calculated scores. Its purpose is educational and as a demo, it does not store data nor submit specific transaction, i.e. allows simulation with different values.
 # For this tool to work we pass reduced version of the dataseet to allow training and online prediction.
 BFdata <- as(data.matrix(df[,2:51]), "realRatingMatrix")
-saveRDS(BFdata, "BFdata.rds")
-saveRDS(dictionary, "dictionary.rds")
+saveRDS(BFdata, "./data_source/BFdata.rds")
+saveRDS(dictionary, "./data_source/dictionary.rds")
 
 
 ##########################################################
