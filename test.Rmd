@@ -1,0 +1,22 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r block_11, echo=FALSE, message=FALSE, warning=FALSE}
+tableDefAccuriacies <- cbind(
+  c("'Hits quartile' for a trait", 
+    "'Hits quartile' all traits", 
+    "'Hits HighLow' for a trait", 
+    "'Hits HigLow all traits'", 
+    "'3+ hits HighLow'"), 
+  c("Score for a specific trait predicts correct quartile (1-25, 26-50, 51-75, 76-100)", 
+    "average of *Hits quartile* for all traits of an observation (test)", 
+    "Score for a specific trait predicts correct half (1-50, 51-100)", 
+    "average of *Hits quartile* for all traits of an observation (test)", 
+    "Scores of three or more traits predict correctly halves"))
+  colnames(tableDefAccuriacies) <- c("Accuracy Indicator", "Definition")
+  
+knitr::kable( tableDefAccuriacies )
+```
