@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.5.15)  22 JUN 2021 15:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.5.15)  22 JUN 2021 17:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -618,39 +618,129 @@ LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 279.
-[3] [4] [5] [6]
-Overfull \vbox (6.91852pt too high) has occurred while \output is active []
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 277.
+[3]
+<report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf, id=123, 469.755pt x 32
+5.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf Graphic file (type
+ pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf
+  used on input line 370.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[4] [5 <./report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf>]
+<report_JES_BigFive5q_files/figure-latex/block_3a-1.pdf, id=145, 469.755pt x 32
+5.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_3a-1.pdf Graphic file (type
+ pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_3a-1.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_3a-1.pdf
+  used on input line 443.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[6] [7 <./report_JES_BigFive5q_files/figure-latex/block_3a-1.pdf>]
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf, id=162, 
+469.755pt x 325.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf Grap
+hic file (type pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
+res-side-1.pdf  used on input line 517.
+(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf, id=163, 
+469.755pt x 325.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf Grap
+hic file (type pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
+res-side-2.pdf  used on input line 518.
+(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf, id=164, 
+469.755pt x 325.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf Grap
+hic file (type pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
+res-side-3.pdf  used on input line 519.
+(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-4.pdf, id=165, 
+469.755pt x 325.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-4.pdf Grap
+hic file (type pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-4.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
+res-side-4.pdf  used on input line 520.
+(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-5.pdf, id=166, 
+469.755pt x 325.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-5.pdf Grap
+hic file (type pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-5.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
+res-side-5.pdf  used on input line 521.
+(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
 
-[7] [8]
+Overfull \hbox (8.88046pt too wide) in paragraph at lines 517--522
+[][] [] [] [] [] 
+ []
 
-LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 6
-85.
+<report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf, id=167, 469.755pt x 32
+5.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf Graphic file (type
+ pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf
+  used on input line 531.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[8 <./report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf> <./
+report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf> <./report
+_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf> <./report_JES_B
+igFive5q_files/figure-latex/block_4b, figures-side-4.pdf> <./report_JES_BigFive
+5q_files/figure-latex/block_4b, figures-side-5.pdf>] [9 <./report_JES_BigFive5q
+_files/figure-latex/block_4c-1.pdf>] [10] [11] [12] [13] [14] [15] [16]
+
+LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 1
+104.
 
 
-LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 6
-85.
+LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 1
+104.
 
-[9]
-<./images/screenshotsSmartphone.jpg, id=181, 693.3102pt x 300.6432pt>
+[17]
+Underfull \vbox (badness 10000) detected at line 1292
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1292
+ []
+
+[18]
+Underfull \vbox (badness 10000) detected at line 1292
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 1292
+ []
+
+[19] [20]
+<./images/screenshotsSmartphone.jpg, id=285, 693.3102pt x 300.6432pt>
 File: ./images/screenshotsSmartphone.jpg Graphic file (type jpg)
 <use ./images/screenshotsSmartphone.jpg>
 Package pdftex.def Info: ./images/screenshotsSmartphone.jpg  used on input line
- 737.
+ 1312.
 (pdftex.def)             Requested size: 469.77321pt x 203.70984pt.
-[10 <./images/screenshotsSmartphone.jpg>] [11] [12] (./report_JES_BigFive5q.aux
+[21 <./images/screenshotsSmartphone.jpg>] [22] [23] (./report_JES_BigFive5q.aux
 )
 Package rerunfilecheck Info: File `report_JES_BigFive5q.out' has not changed.
 (rerunfilecheck)             Checksum: 9B6B65E2F6E289431657C6B180D4E372;4460.
  ) 
 Here is how much of TeX's memory you used:
- 11138 strings out of 480806
- 164590 string characters out of 5903166
- 470061 words of memory out of 5000000
- 28243 multiletter control sequences out of 15000+600000
+ 11222 strings out of 480806
+ 169088 string characters out of 5903166
+ 506617 words of memory out of 5000000
+ 28304 multiletter control sequences out of 15000+600000
  454299 words of font info for 70 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,14n,63p,496b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,14n,63p,594b,465s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mat
 hsy.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/
 lm-mathex.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvi
@@ -674,10 +764,10 @@ lm/lmsy7.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pu
 blic/lm/lmtk10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/ty
 pe1/public/lm/lmtt10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fo
 nts/type1/public/lm/lmtti10.pfb>
-Output written on report_JES_BigFive5q.pdf (12 pages, 1192170 bytes).
+Output written on report_JES_BigFive5q.pdf (23 pages, 1402882 bytes).
 PDF statistics:
- 271 PDF objects out of 1000 (max. 8388607)
- 236 compressed objects within 3 object streams
- 64 named destinations out of 1000 (max. 500000)
- 179 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 381 PDF objects out of 1000 (max. 8388607)
+ 318 compressed objects within 4 object streams
+ 78 named destinations out of 1000 (max. 500000)
+ 219 words of extra memory for PDF output out of 10000 (max. 10000000)
 

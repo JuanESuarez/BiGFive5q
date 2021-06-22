@@ -11,7 +11,8 @@ output:
 knitr::opts_chunk$set(
 	echo = TRUE,
 	error = TRUE,
-	warning = FALSE
+	warning = FALSE, 
+	tidy.opts=list(width.cutoff=80),tidy=TRUE
 )
 ```
 
@@ -73,7 +74,8 @@ Data are located in Kaggle site (https://www.kaggle.com/tunguz/big-five-personal
 #
 # Answers to test data
 # tab delimited, and  our int columns are character, perhaps because of the nulls!
-df <- read.csv("./data_source/data-final.csv", sep="\t", stringsAsFactors = FALSE, na.strings=c("NA","NaN", " ", "NULL"))
+df <- read.csv("./data_source/data-final.csv", 
+               sep="\t", stringsAsFactors = FALSE, na.strings=c("NA","NaN", " ", "NULL"))
 # We select relevant columns to use
 df <- df %>% select(c(1:50), dateload, country) %>% rownames_to_column('userId') %>%
   mutate(Month = month(dateload), Year = year(dateload)) %>%
@@ -104,7 +106,7 @@ However, it is not necessary to run the this preload to run project, since all t
 
 
 
-```{r block_1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_1, message=FALSE, warning=FALSE, include=FALSE}
 ################################################################################
 # BigFive.5q Project
 # A model to predict 45 questions based in only 5 answered
@@ -173,7 +175,7 @@ dictionary
 We will refer as *Scores* to the result (in percentile) of the average of answers (1 to 5 as possible values) corresponding to the ten questions forming each trait. This must be done considering that part of the questions are formualted "reverted" according to published test definition. 
 
 
-```{r block_2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_2, echo=TRUE, message=FALSE, warning=FALSE}
 # This list identifies each column to its corresponding group and informs of the sign (to revert if necessary) based in our previous analysis of correlation
 keys.list <- list(openess = c("OPN1","-OPN2","OPN3","-OPN4","OPN5","-OPN6","OPN7","OPN8","OPN9","OPN10"), 
                   conscienciousness = c("CSN1","-CSN2","CSN3","-CSN4","CSN5","-CSN6","CSN7","-CSN8","CSN9","CSN10"), 
@@ -185,7 +187,7 @@ keys.list <- list(openess = c("OPN1","-OPN2","OPN3","-OPN4","OPN5","-OPN6","OPN7
 
 Since this type of scoring is very frequent in psychometrics, we will take advantage of the package **psych**. Its function **scoreItems** will directly calculate scores (i.e. mean per group taking sign into account). Detailed documentation on this function can be found: See: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/scoreItems
 
-```{r block_2a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_2a, echo=TRUE, message=FALSE, warning=FALSE}
 scoresfile <- scoreFast(keys.list, df) #scoresfile <- scoreVeryFast(keys.list, df)
 # Add calculated columns (scores)
 df_scored_preReversion <- cbind(df, scoresfile)
@@ -207,7 +209,7 @@ df_scored_preReversion <- df_scored_preReversion %>% mutate(
 
 We now visualize how some of the traits tend to be valuated higher than others. For a global analysis, a normalization should we adequate, but we are now focusing in individual study of questions & traits, so the most significant interpretation is that each one of them is approxmimately normal, which be usuful later for percentile calculations.
 
-```{r block_2b, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_2b, echo=FALSE, message=FALSE, warning=FALSE}
 # We take a look at the different indexes against each other, to see what sort of interrelationships they might have.
 df_scored_preReversion %>% ggplot() +
   theme_bw() +
@@ -229,7 +231,7 @@ The Cronbach’s alpha coefficient measures reliability, or internal consistency
 
 According to this coefficient generalized interpretation, values of alpha between 0.8 and 0.9 are considered "Good Internal Consistency", while alpha greater than 0.9 means an "Excellent Internal consistency" situation.
 
-```{r block_3, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_3, echo=TRUE, message=FALSE, warning=FALSE}
 # Preparation, questions structure
 # To prepare an analysis per "traits" (each one includes groups of questions), we create a list of 5 concepts (groups of questions per personality dimension)
 extroversion = dictionary[c(1:10), "ID"]
@@ -263,7 +265,7 @@ rownames(traitsAlphas) <- NULL
 
 We easily visualize that, despite of some differences among traits, all of them fall in an, at least, "high integrity" interval:
 
-```{r block_3a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_3a, echo=FALSE, message=FALSE, warning=FALSE}
 # Assign question's group
 traitsAlphas <- cbind(Group = paste("Questions_", seq(1,5,1), "X", sep=""), traitsAlphas)
 tmpAvg <- mean(traitsAlphas$raw_alpha)
@@ -296,7 +298,7 @@ A key aspect for understanding how some questions relate to other, even belong t
 
 So, let's calculate correlation matrix among all questions to visualize global data pattern. Thus, we have also a have a good source for further calculations on what questions must be chosen to answers when there is a possibility to do it. Note some questions are reverted, but this is not relevant for this exploratory analysis, since it affects only to the sign of the correlation, not its absolute value.
 
-```{r block_4a, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_4a, echo=TRUE, message=FALSE, warning=FALSE}
 # Correlation calculation. Calculate global correlation matrix to see full landscape instead of just per trait
 corAllQuestions <- cor(df[,2:51])
 # Sample of values (two per trait)
@@ -323,7 +325,7 @@ p.mat <- cor.mtest(corAllQuestions)  # significance test
 Correlation within same group: Questions explicitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). We see different traits (groups). Correlation is clearly high within same group.
 
 
-```{r block_4b, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_4b, figures-side, fig.show="hold", out.width="20%", echo=FALSE}
 corrplot(corAllQuestions[1:10,1:10], 
          method = "circle", 
          type = "upper", 
@@ -370,7 +372,7 @@ corrplot(corAllQuestions[41:50,41:50],
 Regarding behavour among groups, we see also some other **significant correlations** (and of course also lack of them) of some questions with questions that "belong" to different traits. Since our challenge is precisely to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
 
 
-```{r block_4c, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_4c, echo=FALSE, message=FALSE, warning=FALSE}
 corrplot(corAllQuestions, 
          method = "circle",
          type = "upper",
@@ -383,7 +385,7 @@ corrplot(corAllQuestions,
 
 
 
-```{r block_5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_5, message=FALSE, warning=FALSE, include=FALSE}
 # Clean environment before training
 rm(questiondf, cronbach)
 rm(scoresfile, df_scored_preReversion, keys.list, buckets)
@@ -420,7 +422,7 @@ This conversion is already covered by the generic scoring analysis used for pack
 
 However, we are going to use functions based in recommendation methods (recommenderLab) based in linear algebra and distances. This algorithms use "ratings" always meaning "positive", never "reverted". For this reason, we will, before analysis, revert results of "reverse" questions and when necessary keep using regular PSYCH functions, but marking those questions as regular/positive (removing the minus sign).
 
-```{r block_6, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_6, echo=TRUE, message=FALSE, warning=FALSE}
 # Revert negative questions of a Likert Scale: (n+1)-x
 df <- df %>% mutate(
   OPN2 = abs(6-OPN2), OPN4 = abs(6-OPN4), OPN6 = abs(6-OPN6), 
@@ -439,7 +441,7 @@ keys.list.allPositive <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OP
 
 We see mean and standard deviation of each trait's questions. This shows us significant differences, as shown during EDA, and will be useful to use normality for estimating probabilities os score (percentiles) as defined by the standard test.
 
-```{r block_7, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_7, echo=TRUE, message=FALSE, warning=FALSE}
 traitsMeans <- c(mean(rowMeans(df[,2:11])), mean(rowMeans(df[,12:21])), mean(rowMeans(df[,22:31])), mean(rowMeans(df[,32:41])), mean(rowMeans(df[,42:51])))
 traitsSds <- c(sd(rowMeans(df[,2:11])), sd(rowMeans(df[,12:21])), sd(rowMeans(df[,22:31])), sd(rowMeans(df[,32:41])), sd(rowMeans(df[,42:51])))
 names(traitsMeans) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
@@ -453,7 +455,7 @@ traitsSds
 
 Althugh Exploratory Data Analysis was done using all data available, we are now going to randomly reduce data size. This is done for computability and is defined in a single parameter *nObservsDevelopment* that can be increased at anytime if system capacity allows.
 
-```{r block_8, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_8, echo=TRUE, message=FALSE, warning=FALSE}
 nObservsDevelopment <- 5000
 set.seed(1, sample.kind="Rounding")
 df <- df[sample(nrow(df), nObservsDevelopment), ]
@@ -466,7 +468,7 @@ The shiny app is an interactive implementation of this model. It simplifies some
 
 For this version of the web app we pass reduced version of the dataset to allow online training and prediction. There are significant improvements that could be added to the tool, whick are remarked in the *Conclusions* chapter of this document.
 
-```{r block_9, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_9, echo=TRUE, message=FALSE, warning=FALSE}
 BFdata <- as(data.matrix(df[,2:51]), "realRatingMatrix")
 saveRDS(BFdata, "./data_source/BFdata.rds")
 saveRDS(dictionary, "./data_source/dictionary.rds")
@@ -477,7 +479,7 @@ saveRDS(dictionary, "./data_source/dictionary.rds")
 
 After data exploration, cleanup, adjustment, and reduction, we will separate in two partitions so we can separately train and test our models. We have the option to use *built-in* partition, testing and accuracy functions of the package recommenderlab, but for clarity and control, we will manage directly and independently these data partitions.
 
-```{r block_10, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_10, echo=TRUE, message=FALSE, warning=FALSE}
 devReduction <- 0.2 # Percentage of original data we extract for development
 set.seed(1, sample.kind="Rounding")
 test_index <- sample(c(1:nrow(df)), (nrow(df) * devReduction), replace = FALSE)
@@ -488,6 +490,7 @@ rm(test_index)
 ```
 
 
+\pagebreak
 ## 3.3 Training and prediction
 
 ### Accuracy measurement: metrics of prediction success
@@ -526,7 +529,7 @@ As reference for accuracy improvement, we will estimate what the Scores would be
 
 This function adjusts random score taking into account that answers of one of every 10 question is known. For simplicity, we assume a linear improvement of accuracy for 1/10 and correct by chance of randomly hitting (1/5) 
 
-```{r block_11, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_11, echo=TRUE, message=FALSE, warning=FALSE}
 adjustScore <- function(x) {
   x + (4/5)*((realScores - x) / 10)
 }
@@ -583,7 +586,7 @@ Our model relies on **only five questions** actually known, out of 50, to predic
 
 The algorithm we propose to select those other four question can be called "minimum combined correlation method", and consists in selecting those questions having less (absolute) correlation with the seed question and with the other chose questions. We implement therefore a recursive approach based in comparing the average correlation of all pairs of questions for each combination (10) of potential questions including the seed question (10000)
 
-```{r block_12, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_12, echo=TRUE, message=FALSE, warning=FALSE}
 # Minimum combined correlation algorithm:
 # Generate all possible combinations of questions (10^5)
 potentialQuestionsSets <- as(expand.grid(keys.list.allPositive), "matrix")
@@ -647,7 +650,7 @@ $$\hat{r}_{aj} = \frac{1}{|{N(a)}|}{\sum_{i\in\mathcal{N(a)}} r_{ij}}$$
 
 With the alternating least squares approach we use the same idea but iteratively alternate between optimizing $U$ and fixing $V$ and vice versa. We do this for each iteration to arrive closer to ${R}={U}\times{V}$.
 
-```{r block_13, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_13, echo=TRUE, message=FALSE, warning=FALSE}
 # we prepare methods to run
 methods_choice <- list(
   # list("ALS", "ALS" = list(NULL)),
@@ -835,7 +838,7 @@ We have got a very appretiable result as a result of testing our two chosen algo
 
 We see how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach.
 
-```{r block_14, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r block_14, echo=FALSE, message=FALSE, warning=FALSE}
 table_results <- analysis_results %>% 
   spread(Trait, Score, fill = "") %>% 
   select(1,2,4,8,5,6,3,7,4)
@@ -844,7 +847,8 @@ rm(analysis_results)
 
 table_results %>% 
   group_by(Accuracy_type, Algorithm) %>% 
-  summarise("Best_Accuracy" = max(as.numeric(All)))
+  summarise("Best_Accuracy" = max(as.numeric(All))) %>% 
+  knitr::kable(digits = 4)
 
 
 table_results %>% knitr::kable(digits = 4)
