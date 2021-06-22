@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.5.15)  22 JUN 2021 13:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.5.15)  22 JUN 2021 15:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -600,57 +600,57 @@ File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 
 {c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdft
 ex.map}]
-<./images/TestIntro.png, id=97, 634.5306pt x 415.7934pt>
+<./images/TestIntro.png, id=101, 634.5306pt x 415.7934pt>
 File: ./images/TestIntro.png Graphic file (type png)
 <use ./images/TestIntro.png>
 Package pdftex.def Info: ./images/TestIntro.png  used on input line 205.
 (pdftex.def)             Requested size: 469.76799pt x 307.82822pt.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 220.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 220.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 220.
 [2 <./images/TestIntro.png>]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 239.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 239.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 239.
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
-66.
+74.
 (c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 271.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 279.
 [3] [4] [5] [6]
 Overfull \vbox (6.91852pt too high) has occurred while \output is active []
 
 [7] [8]
 
 LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 6
-77.
+85.
 
 
 LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 6
-77.
+85.
 
 [9]
-<./images/shinnyapp_image1.jpg, id=174, 225.84375pt x 252.19218pt>
-File: ./images/shinnyapp_image1.jpg Graphic file (type jpg)
-<use ./images/shinnyapp_image1.jpg>
-Package pdftex.def Info: ./images/shinnyapp_image1.jpg  used on input line 727.
-
-(pdftex.def)             Requested size: 225.84662pt x 252.1954pt.
-[10 <./images/shinnyapp_image1.jpg>] [11] [12] [13] (./report_JES_BigFive5q.aux
+<./images/screenshotsSmartphone.jpg, id=181, 693.3102pt x 300.6432pt>
+File: ./images/screenshotsSmartphone.jpg Graphic file (type jpg)
+<use ./images/screenshotsSmartphone.jpg>
+Package pdftex.def Info: ./images/screenshotsSmartphone.jpg  used on input line
+ 737.
+(pdftex.def)             Requested size: 469.77321pt x 203.70984pt.
+[10 <./images/screenshotsSmartphone.jpg>] [11] [12] (./report_JES_BigFive5q.aux
 )
 Package rerunfilecheck Info: File `report_JES_BigFive5q.out' has not changed.
-(rerunfilecheck)             Checksum: 0DBFAB9FC9F5B2FBB945B104A67F4C9D;4246.
+(rerunfilecheck)             Checksum: 9B6B65E2F6E289431657C6B180D4E372;4460.
  ) 
 Here is how much of TeX's memory you used:
- 11135 strings out of 480806
- 164478 string characters out of 5903166
- 470005 words of memory out of 5000000
- 28241 multiletter control sequences out of 15000+600000
+ 11138 strings out of 480806
+ 164590 string characters out of 5903166
+ 470061 words of memory out of 5000000
+ 28243 multiletter control sequences out of 15000+600000
  454299 words of font info for 70 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,14n,63p,496b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,14n,63p,496b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mat
 hsy.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/
 lm-mathex.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvi
@@ -674,10 +674,10 @@ lm/lmsy7.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pu
 blic/lm/lmtk10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/ty
 pe1/public/lm/lmtt10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fo
 nts/type1/public/lm/lmtti10.pfb>
-Output written on report_JES_BigFive5q.pdf (13 pages, 1137523 bytes).
+Output written on report_JES_BigFive5q.pdf (12 pages, 1192170 bytes).
 PDF statistics:
- 269 PDF objects out of 1000 (max. 8388607)
- 233 compressed objects within 3 object streams
- 63 named destinations out of 1000 (max. 500000)
- 171 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 271 PDF objects out of 1000 (max. 8388607)
+ 236 compressed objects within 3 object streams
+ 64 named destinations out of 1000 (max. 500000)
+ 179 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -27,7 +27,7 @@ This test is made of 50 questions grouped in five *personality traits*. All ques
 There are some clear **premises we will follow for this project**:
 
 * Measurable: Strict measurement of results, based on a clear definition of the accuracy obtained.
-* Usuful: Prepare model to be usuful for further developments/integrations, i.e. make it as a *pluggable module* to be integrated in other systems. For example, instead of showing always "optimal" questions to be answered, we prefer to make them -partially- random, so a deployment at bigger scale might benefit of variability.
+* Useful: Prepare model to be usuful for further developments/integrations, i.e. make it as a *pluggable module* to be integrated in other systems. For example, instead of showing always "optimal" questions to be answered, we prefer to make them -partially- random, so a deployment at bigger scale might benefit of variability.
 * Indepentent validation: Never use validation (test) data partition to estimate parameters of select any criteria during training process
 * Computability: project must be deep in calculation but affordable within a local environment in terms of performance. This means that we will reduce our dataset during some stages, but a wider execution can be always an option without need of changing source code, just the parameter.
 
@@ -45,6 +45,10 @@ The Big Five personality traits, also known as the five-factor model (FFM) and t
 ![Big Five infography](./images/TestIntro.png)
 
 This theory is based therefore on the association between words but not on neuropsychological experiments. This theory uses descriptors of common language and therefore suggests five broad dimensions commonly used to describe the human personality and psyche.
+
+## Source code and documentation
+
+All project contents, source codes, documentation, data and shinnyapp codes are publicly available at: https://github.com/JuanESuarez/BigFive5q/tree/main
 
 
 \pagebreak
@@ -801,36 +805,35 @@ for (a in 1:length(methods_choice)) {
 \pagebreak
 # 4 The shiny application
 
-In addition to the model created based on existing dataset, we create also an interactive tool to show in practice how prediction works. The tool is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps. It is basically an interactive web page to allow any person to answer 5 randomly selected questions, and based on them, estimated personality traits Bif Five Scores by *predicting* al other 45 remaining question using our recommendation model.
+In addition to the model created based on existing dataset, we create also an interactive tool to show in practice how prediction works. It is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps and can be publicly accessed at https://juanesuarez.shinyapps.io/BigFive5q/
+
+This tool is basically an interactive web page to allow any person to answer 5 randomly selected questions, and based on them, estimate personality traits Big Five Scores by *predicting* all other 45 remaining question using our recommendation model.
+
+![Screenshot1 of interactive tool](./images/screenshotsSmartphone.jpg)
 
 
-![Screenshot1 of interactive tool](./images/shinnyapp_image1.jpg)
-
-
-For practical and academic reasons, tool is simplified to allow wide interactive testing and avoid any data protection issues .some of the simplification changes:
+Although this tool is fully operational, for practical and academic reasons, it is simplified to allow wide interactive testing avoiding any personal data protection issues. Some of the simplification changes:
 
 * An user can repeat test as many times as desired.
 * Algorithm implemented is UBCF (second best in our study) instead of ALS for interactivity performance.
 * Questions are chosen randomly instead of using our just developed *Minimum Combined Correlation Algorithm*
 * Most the most important... all *hidden* predicted question's answers are shown for instructional purposes
 
-This promising tools inspires many developments to incorporate nice functionalities, potentially very useful in combination with other tools for other specific needs, Some if them:
-
-* registrar usuario
-* almacenar resultados
-* añadir traducción
+This promising tool inspires many developments to incorporate nice functionalities, potentially very useful in combination with other tools for other specific needs, Some of them:
+* allow multilanguage
+* add a submission process to manage transactionally users and their results, preventiong repetition and storing results
+ñadir traducción
+* hide results of prediction of unknown questions
+* combine with other matter-related *control/classification" questions to improve prediction or link to other new outcomes
 * crear un “submit” para queda el resultado sea “inamovible” (o explicar lo dejó así “interactivo” y mostrando las predicciones de preguntas con fines académicos +- “disclosed mode”)
-* añadir otras preguntas de control/clasificación combinadas (...¿mes nacim.? ¿do you like cheese?...) + país + IP + timestamp + vbles1:3
-* combianr con outcomes conocidos (por ejemplo ADE-Univ. Comillas)
-* prohibir repetición de entradas por el mismo usuario
 
 
 \pagebreak
 # 5 Results
 
-We have got aa appretiable result just with Phase 1 Model, and in case we have event time data available for cases to predict, we will obtain even more improvement on RMSE. As a results sumamry, running the final algorithm of our modelling on the –validation– set yields the following rating:
+We have got a very appretiable result as a result of testing our two chosen algorithms (UBCF and ALS). UBCF offers better performance but ALS results in improves accuracies for all indicators.
 
-We can know compare how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach
+We see how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach.
 
 ```{r block_14, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 table_results <- analysis_results %>% 
@@ -847,24 +850,36 @@ table_results %>%
 table_results %>% knitr::kable(digits = 4)
 ```
 
+We see how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach. As a final high level number of prediction improvement, the improvement in global accuracy reach an impressing 57% when consolidation all measured accuracies.
+
 
 \pagebreak
 # 6 Conclusion
-We have implemented a model that ...
+The result of modeling of this project is very inspiring method to dramatically reduce, with relatively low impact on results, the cost of filling very long questionnaires to assess personality traits.
 
-Finally, we can mention some potential improvements for future versions:
+We have followed unchanges the definition of a widely used and prestigious "Big Five Traits Test", but adding data science to improve the process. More specifically, we have used thousands of existing test to predict answers of future users in an absolutely simplified way.
 
-* Optimizar tuning Recommender (evaluationScheme, k-fold, bootstrap, no-sparse, ) usando sub-particiones
-* Probar aumentando el tamaño del dataset (usando sub-participes de training)
-* Ensemble de mejor algoritmo/trait
-* Negociar con ADE para crear modelo de rendimiento académico “5q”
-* Mantener random de preguntas (para diversificar datos obtenidos) pero mejorar selección de otras preguntas por <<correlación ó CART
-* Posibilidad de >5 preguntas
-* Bias Month, Country (mostrar en EDA)
-* Mejoras SHINY: control de no repetición, botónSubmit, añadirPreguntasControl, almacenarResultados_ojoGDPR (IP, hora), precalcularModelo, ...
-* Vincular las 5 preguntas a otros juegos de preguntas/prescriptores para obtener in modelo único con outcome OCEAN: 2 ó 3 preguntas "misceláneas" (¿mes nacim.? ¿do you like cheese? ¿...?)
+Probably the most exciting outcome of this project is that all this modeling is easy to integrate to solve problems in many areas where personality of individuals *play a role* in the problem description or prediction. Also, this work open the possibility to adapt similar approach to other pshychomentric challenges.
+
+As an *extra bonus*, we have build also a web app to interactively show results and make it visible how model works. This tool want to catalize inspiration of data scientist and general viewers on the many possibilities we have in front of us.
+
+Project has combined strong **academic premises** (clear separation train/validation, exact definition and measure of accuracy, realistic computability) with some **very original aspects**, like the fact of using a *Recommender* model as base, the algorithm to combine random and optimal questions to retrieve answer from or the interactive web app implementation.
+
+
+The promising methods created and results obtained open the door to furter future potential developments/additions for future versions:
+
+* Keep optimizing/tuning Recommender (evaluationScheme, k-fold, bootstrap, no-sparse specifics, ... ).
+* Increase dataset size according to computation capability available.
+* Ensemble to use different algotithm optimal for each specific trait score prediction.
+* Ensemble a model pre or post recommnder to consider Month and/or Country as significant predictors.
+* Extend to 100 questions version of the Test and/or increase 5 to more questions to use as base.
+* Add external questions to facilitate classification.
+* Integrate model with existing model that already analized outcomes predicted by personality traits.
+* Move web app to "production" doing improvements and allowing public users functionality.
 
 As a final conclusion, we can state we have reached challenge goal in terms of project requirements and accuracy for the validation set provided.
+
+
 
 
 
