@@ -42,7 +42,7 @@ The Big Five personality traits, also known as the five-factor model (FFM) and t
 
 
 
-![Big Five infography](TestIntro.png)
+![Big Five infography](./images/TestIntro.png)
 
 This theory is based therefore on the association between words but not on neuropsychological experiments. This theory uses descriptors of common language and therefore suggests five broad dimensions commonly used to describe the human personality and psyche.
 
@@ -781,7 +781,7 @@ for (a in 1:length(methods_choice)) {
 In addition to the model created based on existing dataset, we create also an interactive tool to show in practice how prediction works. The tool is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps. It is basically an interactive web page to allow any person to answer 5 randomly selected questions, and based on them, estimated personality traits Bif Five Scores by *predicting* al other 45 remaining question using our recommendation model.
 
 
-![Screenshot1 of interactive tool](shinnyapp_image1.jpg)
+![Screenshot1 of interactive tool](./images/shinnyapp_image1.jpg)
 
 
 For practical and academic reasons, tool is simplified to allow wide interactive testing and avoid any data protection issues .some of the simplification changes:
