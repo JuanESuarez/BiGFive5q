@@ -180,7 +180,7 @@ traitsAlphas %>%
 # Correlation calculation. Calculate global correlation matrix to see full landscape instead of just per trait
 corAllQuestions <- cor(df[,2:51])
 # Sample of values (two per trait)
-head(corAllQuestions[,c(1:2,11:12,21:22,31:32,41:42)])
+head(corAllQuestions[,c(1,11,21,31,41)])
 # Significance calculation. This function calculates de significance test associated to the corrrelation matrix
 cor.mtest <- function(mat, ...) {
   mat <- as.matrix(mat)
@@ -200,55 +200,58 @@ p.mat <- cor.mtest(corAllQuestions)  # significance test
 # Correlation within same group:
 # Questions explitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). 
 # We see now two examples two different traits (groups). Correlation is clearly high within same group.
-corrplot(corAllQuestions[1:10,1:10], 
-         method = "circle", 
-         type = "upper", 
+corrplot(corAllQuestions[41:50,41:50], 
+         method = "circle",
+         type = "lower", 
          order = "alphabet", 
-         tl.col = "black", tl.srt = 90, 
-         title =  "Trait: Openess", 
-         p.mat = p.mat, sig.level = 0.01
-)
-corrplot(corAllQuestions[11:20,11:20], 
-         method = "circle", 
-         type = "upper", 
-         order = "alphabet", 
-         tl.col = "black", tl.srt = 90, 
-         title =  "Trait: Openess", 
-         p.mat = p.mat, sig.level = 0.01
-)
-corrplot(corAllQuestions[21:30,21:30], 
-         method = "circle", 
-         type = "upper", 
-         order = "alphabet", 
-         tl.col = "black", tl.srt = 90, 
-         title =  "Trait: Openess", 
+         tl.col = "black", tl.srt = 0, tl.cex = 1, 
+         title =  "\n\n Trait: Openess", 
          p.mat = p.mat, sig.level = 0.01
 )
 corrplot(corAllQuestions[31:40,31:40], 
-         method = "circle", 
-         type = "upper", 
+         method = "circle",
+         type = "lower", 
          order = "alphabet", 
-         tl.col = "black", tl.srt = 90, 
-         title =  "Trait: Openess", 
+         tl.col = "black", tl.srt = 0, tl.cex = 1, 
+         title =  "\n\n Trait: Conscientioussness", 
          p.mat = p.mat, sig.level = 0.01
 )
-corrplot(corAllQuestions[41:50,41:50], 
-         method = "circle", 
-         type = "upper", 
+corrplot(corAllQuestions[1:10,1:10], 
+         method = "circle",
+         type = "lower", 
          order = "alphabet", 
-         tl.col = "black", tl.srt = 90, 
-         title =  "Trait: Openess", 
+         tl.col = "black", tl.srt = 0, tl.cex = 1, 
+         bg = "White", 
+         title =  "\n\n Trait: Extraversion", 
          p.mat = p.mat, sig.level = 0.01
-         )
+)
+corrplot(corAllQuestions[21:30,21:30], 
+         method = "circle",
+         type = "lower", 
+         order = "alphabet", 
+         tl.col = "black", tl.srt = 0, tl.cex = 1, 
+         title =  "\n\n Trait: Agreeableness", 
+         p.mat = p.mat, sig.level = 0.01
+)
+corrplot(corAllQuestions[11:20,11:20], 
+         method = "circle",
+         type = "lower", 
+         order = "alphabet", 
+         tl.col = "black", tl.srt = 0, tl.cex = 1, 
+         title =  "\n\n Trait: Natural Reactions", 
+         p.mat = p.mat, sig.level = 0.01
+)
+
 # Correlation with other groups. However, we see also some other significant correlations of some questions with questions that "belong" to different traits. Since our challenge is preciselly to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
 # http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram
 corrplot(corAllQuestions, 
          method = "circle",
-         type = "upper",
+         type = "lower",
          order = "alphabet", 
-         tl.col = "black", tl.srt = 90, 
+         tl.col = "black", tl.srt = 45, tl.cex = 0.4, 
          bg = "white", 
-         p.mat = p.mat, sig.level = 0.01
+         p.mat = p.mat, sig.level = 0.01, 
+         mar = c(0,0,1,0)
          )
 
 
@@ -286,12 +289,12 @@ df <- df %>% mutate(
   EST2 = abs(6-EST2), EST4 = abs(6-EST4))
 # We score AFTER change of "reverted questions"
 # Removing minus sign of the list. All questions will be "positive" 
-keys.list.allPositive <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OPN6","OPN7","OPN8","OPN9","OPN10"), 
-                              conscienciousness = c("CSN1","CSN2","CSN3","CSN4","CSN5","CSN6","CSN7","CSN8","CSN9","CSN10"), 
-                              extroversion = c("EXT1","EXT2","EXT3","EXT4","EXT5", "EXT6", "EXT7", "EXT8", "EXT9", "EXT10"), 
-                              agreeability = c("AGR1", "AGR2", "AGR3", "AGR4", "AGR5", "AGR6", "AGR7", "AGR8", "AGR9", "AGR10"), 
-                              natural_reactions = c("EST1","EST2","EST3","EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
-
+keys.list.allPositive <- list(
+  openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OPN6","OPN7","OPN8","OPN9","OPN10"), 
+  conscienciousness = c("CSN1","CSN2","CSN3","CSN4","CSN5","CSN6","CSN7","CSN8","CSN9","CSN10"), 
+  extroversion = c("EXT1","EXT2","EXT3","EXT4","EXT5", "EXT6", "EXT7", "EXT8", "EXT9", "EXT10"), 
+  agreeability = c("AGR1", "AGR2", "AGR3", "AGR4", "AGR5", "AGR6", "AGR7", "AGR8", "AGR9", "AGR10"), 
+  natural_reactions = c("EST1","EST2","EST3","EST4","EST5", "EST6", "EST7", "EST8", "EST9", "EST10"))
 
 
 ##########################################################
@@ -299,10 +302,10 @@ keys.list.allPositive <- list(openess = c("OPN1","OPN2","OPN3","OPN4","OPN5","OP
 ##########################################################
 traitsMeans <- c(mean(rowMeans(df[,2:11])), mean(rowMeans(df[,12:21])), mean(rowMeans(df[,22:31])), mean(rowMeans(df[,32:41])), mean(rowMeans(df[,42:51])))
 traitsSds <- c(sd(rowMeans(df[,2:11])), sd(rowMeans(df[,12:21])), sd(rowMeans(df[,22:31])), sd(rowMeans(df[,32:41])), sd(rowMeans(df[,42:51])))
-traitsMeans
-traitsSds
 names(traitsMeans) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
 names(traitsSds) <- c("extroversion_EXT", "natural_reactions_EST", "agreeability_AGR", "conscienciousness_CSN", "openess_OPN")
+traitsMeans %>% knitr::kable(digits = 4)
+traitsSds %>% knitr::kable(digits = 4)
 
 ##########################################################
 # Dataset size reduction
@@ -408,7 +411,7 @@ analysis_results %>% knitr::kable(digits = 4)
 
 
 ##########################################################
-# Questions selection: minimum combined correlation algorithm
+# Questions selection: Minimum Combined Correlation Algorithm (MCCA)
 ##########################################################
 # Our model relies on only five questions, out of 50, to predict the other 45. This means the best possible selection of the five questions we get real aswer for is very important to better predict the others. However, choosing just the same apparent best combination (always the same for given dataset) seems not to be the most open, realistic, rich option, since in case of moving this model into production, would result in a very poor diversity of input rsults, which long term would drive to worse results and lack of diversity. Thus, we will state as premise that, one of the questions to get real answer from, must be randomly selected (seed question), whilst the other four ones can be generated based on expected best results.
 # The algorithm we propose to select those other four question can be called "minimum combined correlation method", and consists in selecting those questions having less (absolute) correlation with the seed question and with the other chose questions. We implement therefore a recursive approach based in comparing the average correlation of all pairs of questions for each combination (10) of potential questions including the seed question (10000)
@@ -627,23 +630,32 @@ for (a in 1:length(methods_choice)) {
 #
 # We can know compare how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach
 
+# Accuracies by trait and aggregated
 table_results <- analysis_results %>% 
   spread(Trait, Score, fill = "") %>% 
   select(1,2,4,8,5,6,3,7,4)
-
-rm(analysis_results)
-
-table_results %>% 
-  group_by(Accuracy_type, Algorithm) %>% 
-  summarise("Best_Accuracy" = max(as.numeric(All)))
-
-
 table_results %>% knitr::kable(digits = 4)
 
+# Summary of accuracies
+table_results %>% 
+  group_by(Accuracy_type, Algorithm) %>% 
+  summarise("Accuracy" = max(as.numeric(All))) %>% 
+  spread(Algorithm, Accuracy, fill = "") %>% 
+  mutate(
+    Improvement_UBCF = 
+      paste(100*round((as.numeric(UBCF)/as.numeric(Montecarlo)),2),"%",sep = ""), 
+    Improvement_ALS = 
+      paste(100*round((as.numeric(UBCF)/as.numeric(Montecarlo)),2),"%",sep = "")    
+    ) %>% 
+  knitr::kable(digits = 4)
+
+# Improvement number
+refMC <- table_results %>% filter(Algorithm == "Montecarlo" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
+refALS <- table_results %>% filter(Algorithm == "UBCF" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
+improvementNumber <- paste(100*round((as.numeric(refALS)/as.numeric(refMC)),2),"%",sep = "")
+improvementNumber
+
 view(table_results)
-
-
-
 
 
 
