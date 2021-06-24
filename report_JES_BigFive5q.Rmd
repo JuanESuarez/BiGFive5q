@@ -1,10 +1,8 @@
 ---
 title: "BigFive5q Predictive Test"
 author: "Juan Eloy Suarez - PH125 Data Science - Harvard"
-date: "30/June/2021"
-output:
-  pdf_document: default
-  word_document: default
+date: "24/June/2021"
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -19,9 +17,9 @@ knitr::opts_chunk$set(
 
 # Executive Summary
 
-This project uses prediction techniques to simplify the results capture for the well-known "Big Five" personality traits determination test. The goal is to predict most of the answers from a person so we can reduce dramatically his/her input whilst getting to a final score as accurate as possible. Thus, less length, effort and time of test resolution will probably make it easier to be integrated in other processes where estimation of personality characteristics of an individual can be useful.
+This project uses prediction techniques to simplify the well-known "Big Five" personality traits determination test. The goal is to predict most of the answers from a person so we can reduce dramatically his/her input whilst getting to a final score as accurate as possible. Thus, less length, effort and time of test resolution will make it easier to be integrated in other processes where estimation of personality characteristics of an individual can be useful.
 
-One of the key aspects of the project is to define clear and meaningful *indicators of accuracy*, that take into account complexity to measure the multi-outcome challenge. Related with this, a Montecarlo approach has been used to simulate a base-reference of random results.
+One of the key aspects of the project is to define clear and meaningful *indicators of accuracy* that take into account complexity to measure the multi-outcome challenge. Related with this, a Montecarlo approach has been used to simulate a base-reference of random results.
 
 Project originality roots on the fact of taking advantage of a well-known standard **recommendation model**, adapting some concepts to use classical "User x Item" as inspiration for a "User x Question/Trait" structure. 
 
