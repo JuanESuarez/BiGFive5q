@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.5.15)  23 JUN 2021 16:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.5.15)  24 JUN 2021 13:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -593,156 +593,151 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 118
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 143.
+(Font)              <10> on input line 142.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 143.
+(Font)              <7> on input line 142.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 143.
+(Font)              <5> on input line 142.
 [1
 
 {c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdft
 ex.map}]
-<./images/BigFiveInfographic.jpg, id=105, 501.875pt x 518.93875pt>
-File: ./images/BigFiveInfographic.jpg Graphic file (type jpg)
-<use ./images/BigFiveInfographic.jpg>
-Package pdftex.def Info: ./images/BigFiveInfographic.jpg  used on input line 17
-2.
-(pdftex.def)             Requested size: 469.77914pt x 485.75165pt.
-[2] [3 <./images/BigFiveInfographic.jpg>]
+<./images/BigFiveFramework.jpg, id=105, 547.3248pt x 299.6796pt>
+File: ./images/BigFiveFramework.jpg Graphic file (type jpg)
+<use ./images/BigFiveFramework.jpg>
+Package pdftex.def Info: ./images/BigFiveFramework.jpg  used on input line 176.
+
+(pdftex.def)             Requested size: 469.76314pt x 257.21184pt.
+[2 <./images/BigFiveFramework.jpg>]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 2
-02.
+06.
 (c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
-41.
+39.
 (c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 245.
-[4] [5]
-<report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf, id=137, 469.755pt x 32
-5.215pt>
-File: report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf Graphic file (type
- pdf)
-<use report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf>
-Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf
-  used on input line 342.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[6 <./report_JES_BigFive5q_files/figure-latex/block_2b-1.pdf>]
-<report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf, id=153, 469.755pt x 32
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 243.
+[3] [4] [5]
+<report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf, id=140, 469.755pt x 32
 5.215pt>
 File: report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf Graphic file (type
  pdf)
 <use report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf>
 Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf
-  used on input line 410.
+  used on input line 419.
 (pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[7] [8 <./report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf>]
-<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf, id=171, 
+[6 <./report_JES_BigFive5q_files/figure-latex/block_3c-1.pdf>]
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf, id=152, 
 469.755pt x 325.215pt>
 File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf Grap
 hic file (type pdf)
 <use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf>
 Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
-res-side-1.pdf  used on input line 479.
-(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
-<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf, id=172, 
+res-side-1.pdf  used on input line 488.
+(pdftex.def)             Requested size: 155.01962pt x 107.32127pt.
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf, id=153, 
 469.755pt x 325.215pt>
 File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf Grap
 hic file (type pdf)
 <use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf>
 Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
-res-side-2.pdf  used on input line 480.
-(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
-<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf, id=173, 
+res-side-2.pdf  used on input line 489.
+(pdftex.def)             Requested size: 155.01962pt x 107.32127pt.
+<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf, id=154, 
 469.755pt x 325.215pt>
 File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf Grap
 hic file (type pdf)
 <use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf>
 Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
-res-side-3.pdf  used on input line 481.
-(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
-<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-4.pdf, id=174, 
+res-side-3.pdf  used on input line 490.
+(pdftex.def)             Requested size: 155.01962pt x 107.32127pt.
+<report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-1.pdf, id=155, 
 469.755pt x 325.215pt>
-File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-4.pdf Grap
+File: report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-1.pdf Grap
 hic file (type pdf)
-<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-4.pdf>
-Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
-res-side-4.pdf  used on input line 482.
-(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
-<report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-5.pdf, id=175, 
+<use report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-1.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4c, figu
+res-side-1.pdf  used on input line 492.
+(pdftex.def)             Requested size: 155.01962pt x 107.32127pt.
+<report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-2.pdf, id=156, 
 469.755pt x 325.215pt>
-File: report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-5.pdf Grap
+File: report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-2.pdf Grap
 hic file (type pdf)
-<use report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-5.pdf>
-Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4b, figu
-res-side-5.pdf  used on input line 483.
-(pdftex.def)             Requested size: 93.94933pt x 65.04184pt.
+<use report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-2.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4c, figu
+res-side-2.pdf  used on input line 493.
+(pdftex.def)             Requested size: 155.01962pt x 107.32127pt.
+[7 <./report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf> <./
+report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf> <./report
+_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf>]
+<report_JES_BigFive5q_files/figure-latex/block_4d-1.pdf, id=181, 469.755pt x 32
+5.215pt>
+File: report_JES_BigFive5q_files/figure-latex/block_4d-1.pdf Graphic file (type
+ pdf)
+<use report_JES_BigFive5q_files/figure-latex/block_4d-1.pdf>
+Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4d-1.pdf
+  used on input line 503.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+[8 <./report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-1.pdf> <./
+report_JES_BigFive5q_files/figure-latex/block_4c, figures-side-2.pdf> <./report
+_JES_BigFive5q_files/figure-latex/block_4d-1.pdf>] [9] [10] [11] [12] [13] [14]
+[15]
 
-Overfull \hbox (8.88046pt too wide) in paragraph at lines 479--484
-[][] [] [] [] [] 
+LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 1
+060.
+
+
+LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 1
+060.
+
+[16]
+Underfull \vbox (badness 10000) detected at line 1283
  []
 
-<report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf, id=176, 469.755pt x 32
-5.215pt>
-File: report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf Graphic file (type
- pdf)
-<use report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf>
-Package pdftex.def Info: report_JES_BigFive5q_files/figure-latex/block_4c-1.pdf
-  used on input line 493.
-(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
-[9 <./report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-1.pdf> <./
-report_JES_BigFive5q_files/figure-latex/block_4b, figures-side-2.pdf> <./report
-_JES_BigFive5q_files/figure-latex/block_4b, figures-side-3.pdf> <./report_JES_B
-igFive5q_files/figure-latex/block_4b, figures-side-4.pdf> <./report_JES_BigFive
-5q_files/figure-latex/block_4b, figures-side-5.pdf>] [10 <./report_JES_BigFive5
-q_files/figure-latex/block_4c-1.pdf>] [11] [12] [13] [14] [15] [16] [17]
 
-LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 1
-045.
+Underfull \vbox (badness 10000) detected at line 1283
+ []
+
+[17]
+Underfull \vbox (badness 10000) detected at line 1283
+ []
 
 
-LaTeX Warning: Command \textperiodcentered invalid in math mode on input line 1
-045.
+Underfull \vbox (badness 10000) detected at line 1283
+ []
 
 [18]
-Underfull \vbox (badness 10000) detected at line 1240
+Underfull \vbox (badness 10000) detected at line 1283
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1240
+Underfull \vbox (badness 10000) detected at line 1283
  []
 
-[19]
-Underfull \vbox (badness 10000) detected at line 1240
- []
-
-
-Underfull \vbox (badness 10000) detected at line 1240
- []
-
-[20] [21]
-<./images/screenshotsSmartphone.jpg, id=296, 693.3102pt x 300.6432pt>
+[19] [20]
+<./images/screenshotsSmartphone.jpg, id=284, 693.3102pt x 300.6432pt>
 File: ./images/screenshotsSmartphone.jpg Graphic file (type jpg)
 <use ./images/screenshotsSmartphone.jpg>
 Package pdftex.def Info: ./images/screenshotsSmartphone.jpg  used on input line
- 1260.
+ 1303.
 (pdftex.def)             Requested size: 469.77321pt x 203.70984pt.
-[22 <./images/screenshotsSmartphone.jpg>] [23] [24] [25] (./report_JES_BigFive5
+[21 <./images/screenshotsSmartphone.jpg>] [22] [23] [24] (./report_JES_BigFive5
 q.aux)
 Package rerunfilecheck Info: File `report_JES_BigFive5q.out' has not changed.
-(rerunfilecheck)             Checksum: 6226A22D98F140976ACFBA5E034C1C24;4566.
+(rerunfilecheck)             Checksum: EAB925838A348B99583427D4D31B5DA1;4605.
  ) 
 Here is how much of TeX's memory you used:
- 11231 strings out of 480806
- 169234 string characters out of 5903166
- 504473 words of memory out of 5000000
- 28308 multiletter control sequences out of 15000+600000
- 454299 words of font info for 70 fonts, out of 8000000 for 9000
+ 11225 strings out of 480806
+ 168853 string characters out of 5903166
+ 509124 words of memory out of 5000000
+ 28303 multiletter control sequences out of 15000+600000
+ 458570 words of font info for 71 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,14n,63p,592b,441s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,14n,63p,468b,465s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mat
 hsy.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/
 lm-mathex.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvi
@@ -752,24 +747,25 @@ vips/lm/lm-mathit.enc}{c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts
 ts/enc/dvips/lm/lm-ts1.enc}<c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/
 fonts/type1/public/lm/lmbx10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf
 -dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX
-/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/Users/bab635/AppData/Roaming/T
-inyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/bab635/AppData/Roa
-ming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/Users/bab635/AppDat
-a/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/bab635/A
-ppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/bab
-635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/User
-s/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/
-Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pf
-b><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lms
-y10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/
-lm/lmsy7.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pu
-blic/lm/lmtk10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/ty
-pe1/public/lm/lmtt10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fo
-nts/type1/public/lm/lmtti10.pfb>
-Output written on report_JES_BigFive5q.pdf (25 pages, 670542 bytes).
+/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb><c:/Users/bab635/AppData/Roaming/
+TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/Users/bab635/AppData/Ro
+aming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/Users/bab635/AppD
+ata/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/Users/bab635
+/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/b
+ab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Us
+ers/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><
+c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.p
+fb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lm
+ri10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public
+/lm/lmsy10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/
+public/lm/lmsy7.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
+ype1/public/lm/lmtk10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-dist/f
+onts/type1/public/lm/lmtt10.pfb><c:/Users/bab635/AppData/Roaming/TinyTeX/texmf-
+dist/fonts/type1/public/lm/lmtti10.pfb>
+Output written on report_JES_BigFive5q.pdf (24 pages, 698788 bytes).
 PDF statistics:
- 397 PDF objects out of 1000 (max. 8388607)
- 333 compressed objects within 4 object streams
- 84 named destinations out of 1000 (max. 500000)
- 227 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 388 PDF objects out of 1000 (max. 8388607)
+ 326 compressed objects within 4 object streams
+ 83 named destinations out of 1000 (max. 500000)
+ 222 words of extra memory for PDF output out of 10000 (max. 10000000)
 

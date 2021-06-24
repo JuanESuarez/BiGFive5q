@@ -31,12 +31,15 @@ Apart of de Exploratory Data Analysis and training of a operational prediction m
 
 The Big Five personality traits, also known as the five-factor model (FFM) and the OCEAN model, is a taxonomy, or grouping, for personality traits. When factor analysis (a statistical technique) is applied to personality survey data, some words used to describe aspects of personality are often applied to the same person. For example, someone described as conscientious is more likely to be described as "always prepared" rather than "messy".
 
+This theory is based therefore on the association between words but not on neuropsychological experiments, by using descriptors of common language. As a result, it suggests five broad dimensions commonly used to describe the human personality and psyche.
+
 This test is made of 50 questions grouped in five *personality traits*. All questions must be answered from 1 (Strongly Disagree) to 5 (Strongly Agree), being some of them "reverted" (formulated as negative). The percentile of the average of each 10-questions group is the final score for that trait. Our **goal is to use only five questions to predict all 45 others and therefore final scores for each trait**, benefiting therefore of such a very light approach to get results.
 
 
-![Big Five infography](./images/BigFiveInfographic.jpg)
+![The Big Five Framework of Personality Traits](./images/BigFiveFramework.jpg)
 
-This theory is based therefore on the association between words but not on neuropsychological experiments, by using descriptors of common language. As a result, it suggests five broad dimensions commonly used to describe the human personality and psyche.
+
+
 
 
 ## Source code and documentation
@@ -47,19 +50,19 @@ All project contents, source codes, documentation, data and shinnyapp codes are 
 \pagebreak
 # 2 Exploratory Data Analysis
 
-This project is based in the "Big Five Personality Test. 1M Answers to 50 personality items, and technical information" dataset. These data were collected (2016-2018) through an interactive on-line personality test and it contains:
+The "Big Five Personality Test. 1M Answers to 50 personality items, and technical information" dataset in our source for this project. The personality test was constructed with the "Big-Five Factor Markers" from the International Personality Item Pool (https://ipip.ori.org/newBigFive5broadKey.htm). Participants were informed that their responses would be recorded and used for research at the beginning of the test, and asked to confirm their consent at the end of the test. These data were collected (2016-2018) through an interactive on-line personality test and it contains:
 
 * 1015341 records (tests).
-* 110 columns of data, 50 of them answers (1=Strongly Disagree, 3=Neutral, 5=Strongly Agree) of test questions, and all others containing country, location, load date and load/response time for each question.
+* 110 columns of data, 50 of them answers (1=Strongly Disagree, 2=Disagree, 3=Neutral, 4=Agree, 5=Strongly Agree) of test questions, and all others containing country, location, load date and load/response time for each question.
 * A codebook detailing literal wording of each one of the 50 questions.
 
-The personality test was constructed with the "Big-Five Factor Markers" from the International Personality Item Pool (https://ipip.ori.org/newBigFive5broadKey.htm). Participants were informed that their responses would be recorded and used for research at the beginning of the test, and asked to confirm their consent at the end of the test.
 
-For our approach to the model we will discard country, location, and load/response time to questions, so we focus directly on the questions and their answers. As we will remark in the Conclusions chapter, there are interesting possibilities for developing the project using these data, but they are out of the scope of this project. This reduction in the number of prescriptors will significantly reduce the size of our dataset.
 
-## Data load strategy
+For our approach to the model we will discard country, location, and load/response time to questions, so we focus directly on the questions and their answers. As we will remark in the Conclusions chapter, there are interesting possibilities for developing the project using these data, but they are out of the scope of this work. This reduction in the number of prescriptors will significantly reduce the size of our dataset.
 
-Data are located in Kaggle site (https://www.kaggle.com/tunguz/big-five-personality-test/download). Data size in .CSV is 396 MB, so we will, as a previous step, load, select and convert them to .rds, so a very significant size reduction is obtained to 21 MB full dataset. The code to connect directly to Kaggle server requires an API and some specific coding, so for simplification, we have previously downloaded data locally and saved to a .rds file in directory ./data-source. Code to perform this preprocess and storage is available:
+## Data load process
+
+Data are located in Kaggle site (https://www.kaggle.com/tunguz/big-five-personality-test/download). Data size in .CSV is 396 MB, so we will, as a previous step, load, select and convert them to the much more efficient format .rds, obtaining a very significant size reduction is obtained to 21 MB full dataset. The code to connect directly to Kaggle server requires an API and some specific coding, so for simplification, we have previously downloaded data locally and saved to a .rds file in directory ./data-source. Code to perform this preprocess and storage is available and shpwn below:
 
 ```{r block_1a, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
 # Read Kaggle dataset copied to local directory
@@ -89,9 +92,8 @@ saveRDS(dictionary, "./data_source/dictionary.rds")
 
 However, it is not necessary to run the this preload to run project, since all two referred input datasets are already, and publicly, available:
 
-./data-source/BFdata.rds
-
-./data-source/dictionary.rds
+    ./data-source/BFdata.rds
+    ./data-source/dictionary.rds
 
 
 
@@ -161,7 +163,7 @@ dictionary
 
 ## Distribution of scores per trait
 
-We will refer as *Scores* to the result (in percentile) of the average of answers (1 to 5 as possible values) corresponding to the ten questions forming each trait. This must be done considering that part of the questions are formualted "reverted" according to published test definition. 
+We will refer as *Scores* to the result (in percentile) of the average of answers (1 to 5 as possible values) corresponding to the ten questions forming each trait. This must be done considering that part of the questions are formulated "reverted" according to published test definition. 
 
 
 ```{r block_2, echo=TRUE, message=FALSE, warning=FALSE}
@@ -180,24 +182,25 @@ Since this type of scoring is very frequent in psychometrics, we will take advan
 scoresfile <- scoreFast(keys.list, df) #scoresfile <- scoreVeryFast(keys.list, df)
 # Add calculated columns (scores)
 df_scored_preReversion <- cbind(df, scoresfile)
-# Once obtained the observation average per group, we need the p-value (0 to 100) per observation in group scope
+# Once obtained the observation average per group, we need 
+# the p-value (0 to 100) per observation in group scope
 P1 = ecdf(scoresfile[,1])    # P is a function giving the empirical CDF of X
 P2 = ecdf(scoresfile[,2])
 P3 = ecdf(scoresfile[,3])
 P4 = ecdf(scoresfile[,4])
 P5 = ecdf(scoresfile[,5])
 # Store a rounded percentage (percentile) as resulting score for each trait
-df_scored_preReversion <- 
-  df_scored_preReversion %>% 
+df_scored_preReversion <- df_scored_preReversion %>% 
   mutate(
-    `openess-P` = round(P1(`openess-A`)*100), 
-    `conscienciousness-P` = round(P2(`conscienciousness-A`)*100), 
-    `extroversion-P` = round(P3(`extroversion-A`)*100), 
-    `agreeability-P` = round(P4(`agreeability-A`)*100), 
-    `natural_reactions-P` = round(P5(`natural_reactions-A`)*100) )
+    openess-P = round(P1(`openess-A`)*100), 
+    conscienciousness-P = round(P2(`conscienciousness-A`)*100), 
+    extroversion-P = round(P3(`extroversion-A`)*100), 
+    agreeability-P = round(P4(`agreeability-A`)*100), 
+    natural_reactions-P = round(P5(`natural_reactions-A`)*100) 
+    )
 ```
 
-We now visualize how some of the traits tend to be valuated higher than others. For a global analysis, a normalization should we adequate, but we are now focusing in individual study of questions & traits, so the most significant interpretation is that each one of them is approxmimately normal, which be usuful later for percentile calculations.
+We now visualize how some of the traits tend to be valuated higher than others. For a global analysis, a normalization should we adequate, but we are now focusing in individual study of questions & traits, so the most significant interpretation is that each one of them is approxmimately normal, which be useful later for percentile calculations.
 
 ```{r block_2b, echo=FALSE, message=FALSE, warning=FALSE}
 # We take a look at the different indexes against each other, to see what sort of interrelationships they might have.
@@ -215,7 +218,7 @@ df_scored_preReversion %>% ggplot() +
 
 ## Test Reliability in each personality trait (internal consistency)
 
-We are now interested in assessing the internal consistency of the test, i.e. to know at what extent our questions are related, behave similarly, when they belong to same group/trait.
+We are now interested in assessing the internal consistency of the test, i.e. to know **at what extent our questions are related, behave similarly, when they belong to same group/trait**.
 
 The Cronbach’s alpha coefficient measures reliability, or internal consistency, to see if multiple-question Likert scale surveys are reliable. Cronbach’s alpha will tell us how closely related a set of test items are as a group. More details on Cronback's alpha can be found here: https://www.rdocumentation.org/packages/psych/versions/2.1.3/topics/alpha
 
@@ -249,7 +252,7 @@ for(i in 1:length(buckets)){
 
 ```
 
-We also see extacted signs fro each question indicating if correlates directly or "reverted"
+We also see extracted signs fro each question indicating if correlates directly or "reverted"
 
 ```{r block_3a, echo=FALSE, message=FALSE, warning=FALSE}
 questionsSigns
@@ -278,7 +281,7 @@ traitsAlphas %>%
                    box.padding   = 0.65,
                    point.padding = 0.5,
                    segment.color = 'grey50') +
-  ggtitle("Tests Reliability") +
+  ggtitle("Traits Reliability") +
   xlab(element_blank()) +
   ylab("Cronbach's alpha") +
   theme(legend.position = "none",
@@ -291,7 +294,7 @@ traitsAlphas %>%
 
 ## Correlation of the answers to questions
 
-A key aspect for understanding how some questions relate to other, even belong to a different group, is their correlation. It is intuitive to think in correlation of questions as a clear indicator of how unknown values (unanswered question) can be predicted based in known answers to other questions that usually correlate.
+A key aspect for understanding how some questions relate to other, even belong to a different group, is their correlation. It is intuitive to think in **correlation of questions as a clear indicator of how unknown values (unanswered question) can be predicted** based in known answers to other questions that usually correlate.
 
 So, let's calculate correlation matrix among all questions to visualize global data pattern. Thus, we have also a have a good source for further calculations on what questions must be chosen to answers when there is a possibility to do it. Note some questions are reverted, but this is not relevant for this exploratory analysis, since it affects only to the sign of the correlation, not its absolute value.
 
@@ -321,16 +324,16 @@ p.mat <- cor.mtest(corAllQuestions)  # significance test
 ```
 
 
-Correlation within same group: Questions explicitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). We see different traits (groups). Correlation is clearly high within same group.
+**Correlation within same group:** Questions explicitly associated to each "trait" strongly correlate, i.e. all of them are related because all of them explain the final value of the score for its specific group (trait). We see different traits (groups). Correlation is clearly high within same group.
 
 
-```{r block_4b, figures-side, fig.show="hold", out.width="20%", echo=FALSE}
+```{r block_4b, figures-side, fig.show="hold", out.width="33%", echo=FALSE}
 corrplot(corAllQuestions[41:50,41:50], 
          method = "circle",
          type = "lower", 
          order = "alphabet", 
          tl.col = "black", tl.srt = 0, tl.cex = 1, 
-         title =  "\n\n Trait: Openess", 
+         title =  "\n\n Openess", 
          p.mat = p.mat, sig.level = 0.01
 )
 corrplot(corAllQuestions[31:40,31:40], 
@@ -338,7 +341,7 @@ corrplot(corAllQuestions[31:40,31:40],
          type = "lower", 
          order = "alphabet", 
          tl.col = "black", tl.srt = 0, tl.cex = 1, 
-         title =  "\n\n Trait: Conscientioussness", 
+         title =  "\n\n Conscientioussness", 
          p.mat = p.mat, sig.level = 0.01
 )
 corrplot(corAllQuestions[1:10,1:10], 
@@ -347,15 +350,18 @@ corrplot(corAllQuestions[1:10,1:10],
          order = "alphabet", 
          tl.col = "black", tl.srt = 0, tl.cex = 1, 
          bg = "White", 
-         title =  "\n\n Trait: Extraversion", 
+         title =  "\n\n Extraversion", 
          p.mat = p.mat, sig.level = 0.01
 )
+```
+
+```{r block_4c, figures-side, fig.show="hold", out.width="33%", echo=FALSE}
 corrplot(corAllQuestions[21:30,21:30], 
          method = "circle",
          type = "lower", 
          order = "alphabet", 
          tl.col = "black", tl.srt = 0, tl.cex = 1, 
-         title =  "\n\n Trait: Agreeableness", 
+         title =  "\n\n Agreeableness", 
          p.mat = p.mat, sig.level = 0.01
 )
 corrplot(corAllQuestions[11:20,11:20], 
@@ -363,23 +369,24 @@ corrplot(corAllQuestions[11:20,11:20],
          type = "lower", 
          order = "alphabet", 
          tl.col = "black", tl.srt = 0, tl.cex = 1, 
-         title =  "\n\n Trait: Natural Reactions", 
+         title =  "\n\n Natural Reactions", 
          p.mat = p.mat, sig.level = 0.01
 )
 ```
 
 
-Regarding behavour among groups, we see also some other **significant correlations** (and of course also lack of them) of some questions with questions that "belong" to different traits. Since our challenge is precisely to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
+Regarding behavour among groups, we see also some other **significant correlations** (and of course also lack of them) of some questions with questions that "belong" to different traits. Since our challenge is precisely to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to **use these correlations to select what specific questions we show to get answer.** 
 
 
-```{r block_4c, echo=FALSE, message=FALSE, warning=FALSE}
+```{r block_4d, echo=FALSE, message=FALSE, warning=FALSE}
 corrplot(corAllQuestions, 
-         method = "circle",
+         method = "color",
          type = "lower",
          order = "alphabet", 
          tl.col = "black", tl.srt = 45, tl.cex = 0.4, 
          bg = "white", 
-         p.mat = p.mat, sig.level = 0.01, 
+         p.mat = p.mat, sig.level = 0.01, insig='blank', 
+         title =  "\n\n Questions correlation", 
          mar = c(0,0,1,0)
          )
 ```
@@ -399,17 +406,17 @@ rm(scoresfile, df_scored_preReversion, keys.list, buckets)
 
 ## 3.1 Strategy, process
 
-Our challenge is to predict the answers of 45 questions based on the answers to 5 questions we know. Total number of questions is exactly 50, so our matrix of users versus item (questions) is fully filled and we find no *sparcity*. We also observe that the shape of this matrix is pretty vertical, with around rows by only fifty columns. Despite of this singularities, this model seems to reasonable fit a "recommendation system" approach. We will pursue on that and take advantage of the already prebouild strong tools existing in R, specifically the Recommenderlab package.
+Our challenge is to predict the answers of 45 questions based on the answers to 5 questions we know. Total number of questions is exactly 50, so our matrix of users versus item (questions) is fully filled and we find no *sparcity*. We also observe that the shape of this matrix is pretty vertical, with around rows by only fifty columns. Despite of this singularities, this model seems to reasonable fit a "recommendation system" approach. We will pursue on that and take advantage of the already prebouild strong tools existing in R, specifically the *Recommenderlab package*.
 
 Nevertheless, some preparation steps will be necessary to *adapt* our problem to the functionalities the standard recommender tool provides.
 
 Firstly, we need to prepare data for modeling, taking into account that our recommender algorithm will ignore **reverted effect on questions**, so we need to invert their existing answers in advance to make data homogeneous. Also, the **size of base dataset** is excessive in terms of computability in a local environment so we will make a random reduction of it - due to the high density of our Users x Questions matrix, this size reduction will not have dramatics effect in the decrease of our results, though of course could be reconfigured if more powerful systems would run the model.
 
-We will also, in support of our interactive app, to extract data to make it **available within de shinyapps environment**. 
+We will also, in support of our interactive app, to extract data to make it **available within de *shinyapps* interactive web app**. 
 
 A key step will be then to separate dataset in two (**train and validation**) partitions for fulfill machine learning paradigm. For clarity, we will not use *scheme* options of recommenderlab package but to directly build, manage and measure these partitions.
 
-Once data are ready, training and prediction and measurement process starts. First, we need to clearly define **what is and how to measure accuracy** of our model, as easily as possible, taking into account the relative complexity of the calculation of the five resulting scores.  A very important step of the modeling will be to build an **algorithm to select what five questions we want to retrieve** answers from. This process must respect a random base to ensure eventual variability in results capture, but optimizing the choice to improve model accuracy.  Once done all above steps, we will **run our recommender algorithms**, doing training of each model, prediction, calculation of final scores and storing results for comparison.
+Once data are ready, training, prediction and measurement process starts. Initially, we need to clearly define **what is and how to measure accuracy** of our model, as easily as possible, taking into account the relative complexity of the calculation of the five resulting scores.  A very important step of the modeling will be to build an **algorithm to select what five questions we want to retrieve** answers from. This process must respect a random base to ensure eventual variability in results capture, but optimizing the choice to improve model accuracy.  Once done all above steps, we will **run our recommender algorithms**, doing training of each model, prediction, calculation of final scores and storing results for comparison.
 
  
 
@@ -417,7 +424,7 @@ Once data are ready, training and prediction and measurement process starts. Fir
 
 ### Reverted questions treatment
 
-Our data contains answers to questions considered "reverted". This means that the question is written in a negative way and, for global analysis,  must be scored reverting results recorded. For example, questions "I am the life of the party" and "I don't talk a lot" belong to same trait "Extroversion". However, first second one is reverted, so for direct comparison we need to convert 1 to 5, 2 to 4, 4 to 2 and 5 to 1 answers.
+Our data contains answers to questions considered "reverted". This means that the question is written in a negative way and, for global analysis,  must be scored reverting results recorded. For example, questions "I am the life of the party" and "I don't talk a lot" belong to same trait "Extraversion". However, first second one is reverted, so for direct comparison we need to convert 1 to 5, 2 to 4, 4 to 2 and 5 to 1 answers.
 
 This conversion is already covered by the generic scoring analysis used for package PSYCH, and just identifying with a minus sign before question Id, function internally reverts answers value. This was used in the EDA part above.
 
@@ -501,14 +508,14 @@ rm(test_index)
 
 ### Accuracy measurement: metrics of prediction success
 
-A good definiiton of the accuracy we expect from our model is a key step during development. The multi-result (5 Scores) this test outcomes makes it necessary to define our expectation for the predictions in terms of:
+A good definiiton of the accuracy we expect from our model is a key step during development. The multi-result (5 Scores) characteristic of this test outcomes makes it necessary to define our expectation for the predictions in terms of:
 
 1) What exactly we want to measure for accuracy
 2) A reference of how good the prediction is when done randomly
 
 #### What to measure?
 
-The challenge of the project is to predict Scores for each one of the five personality traits, but these scores directly depend on the answers to 50 questions (10 per trait) where we only know real value of five of them. Thus, our accuracy will depend on how close we are to the real Score for each trait, which is originally expressed in percentile. Since this measure can be understood as approximate/soft, we assume that, for a specific trait, hitting (predicting) the correct quartile could be considered as reasonable good result. In similar terms, hitting same half (high-low) is also -though less- a good result. Looking at all five trait as a set, we will also establish as a good result to correctly predict (high-low) most traits, i.e. three or more of the five. So, our accuracy metrics will be defined as:
+The challenge of the project is to predict Scores for each one of the five personality traits, but these scores directly depend on the answers to 50 questions (10 per trait) where we only know real value of five of them. Thus, our accuracy will depend on how close we are to the real Score for each trait, which is originally expressed in percentile. Since this measure can be understood as approximate/soft, we assume that, for a specific trait, hitting (predicting) the **correct quartile** could be considered as a *reasonable good result*. In similar terms, hitting **same half (high-low)** is *also -though less- a good result*. Looking at all five trait as a set, we will also establish as a *good result* to correctly predict **(high-low) most traits**, i.e. three or more of the five. So, our accuracy metrics will be defined as:
 
 
 ```{r block_10a, echo=FALSE, message=FALSE, warning=FALSE}
@@ -585,11 +592,11 @@ analysis_results %>% knitr::kable(digits = 4)
 ```
 
 
-### Questions selection: minimum combined correlation algorithm
+### Questions selection: Minimum Combined Correlation Algorithm (MCCA)
 
-Our model relies on **only five questions** actually known, out of 50, to predict the other 45. This means the best possible selection of the five questions we get real answer for is very important to better predict the others. However, choosing just the same apparent best combination (always the same for given dataset) seems not to be the most open, realistic, rich option, since in case of moving this model into production, would result in a very poor diversity of input rsults, which long term would drive to worse results and lack of diversity. Thus, we will state as premise that, one of the questions to get real answer from, must be randomly selected (seed question), whilst the other four ones can be generated based on expected best results.
+Our model relies on **only five questions** actually known, out of 50, to predict the other 45. This means a good selection of the five questions we get real answer for, is very important to better predict the others. However, choosing just the same apparent best combination (always the same for given dataset) seems not to be the most open, realistic, rich option, since in case of moving this model into production, would result in a very poor diversity of input results, which long term would drive to worse results and lack of diversity. Thus, we will state as premise that, one of the questions to get real answer from, must be randomly selected (seed question), whilst the other four ones can be generated based on expected best results.
 
-The algorithm we propose to select those other four question can be called "minimum combined correlation method", and consists in selecting those questions having less (absolute) correlation with the seed question and with the other chose questions. We implement therefore a recursive approach based in comparing the average correlation of all pairs of questions for each combination (10) of potential questions including the seed question (10000)
+The algorithm we propose to select those other four question can be called "minimum combined correlation method", and consists in selecting those questions having less (absolute) correlation with the seed question and with the other chose questions. It relies on the assumption that "the most *different* our know questions are, the better prediction we eill generate"We implement therefore a recursive approach based in comparing the average correlation of all pairs of questions for each combination (10) of potential questions including the seed question (10000)
 
 ```{r block_12, echo=TRUE, message=FALSE, warning=FALSE}
 # Minimum combined correlation algorithm:
@@ -620,29 +627,30 @@ for (qs in 1:nrow(potentialQuestionsSets)) {
 }
 ```
 
-Based on the minimum correlation among its questions, we select a set
+Based on the minimum correlation among its questions, we select a set:
 
 ```{r block_12a, echo=TRUE, message=FALSE, warning=FALSE}
 # Convert it to column index for continuing modelling proccess
-chosen_questions <- which(colnames(BF_test[,2:51]) %in% 
-                            potentialQuestionsSets[which.min(correlPerSet),])
+chosen_questions <- 
+  which(colnames(BF_test[,2:51]) %in% 
+          potentialQuestionsSets[which.min(correlPerSet),])
 chosen_questions
 ```
 
 
 ### Loop available recommendation algorithms
 
-Our approach for predicting 45 answers (item) of an user that actually answered only to 5, will be to a Recommendation Model, based in the library Recommederlab. Tha basic idea is to consider Users (those who answer) and Items (questions) and apply some of the methods of standard recommendation. However, there are some singularities in our case compared to a *typical movie/book* recommendation case:
+Our approach for predicting 45 answers (items) of an user that actually answered only to 5, will be to use a Recommendation Model, based in the **library Recommederlab**. Tha basic idea is to consider Users (those who answer) and Items (questions) and apply some of the methods of standard recommendation. However, there are some singularities in our case compared to a *typical movie/book* recommendation case:
 
-* No sparcity: our matrix of answers *Users X Items* has all cells filled, since we have data for all users answers all questions
-* Matrix is pretty "vertical" having more that 800000 Users (after initial cleanup) and 50 Item (columns)
-* Items have clear correlated components, since questions are grouped by traits
+* No sparcity: our matrix of answers *Users X Items* has all cells filled, since we have data for all users answering all questions.
+* Matrix is pretty "vertical" having more that 800000 Users (after initial cleanup) and 50 Item (columns).
+* Items have clear correlated components, since questions are grouped by traits.
 
-Thus, we will choose adequate algorithms based on singularities:
+Therefore, we will choose adequate algorithms based on singularities:
 
-Due to the shape of the matrix, we discard IBCF (Item Based collaborative Filtering) due to the risk in some cases fo not generating predictions for all item (could be fixed with average/median filling though loosing accuracy). Regarding no scarcity we also discard Popular method.
+Due to the shape of the matrix, we discard IBCF (Item Based collaborative Filtering) because of the risk in some cases for not generating predictions for all item (could be fixed with average/median filling though loosing accuracy). Regarding no scarcity we also discard Popular method.
 
-In order to generate a rich approach for our prediction, we'll focus in a collaborative filtering method (UBCF) and in a matrix factorization method (ALS) - we choose it instead of SVD for its superior accuracy given singularities of our User x Item matrix:
+In order to generate a rich approach for our prediction, we will focus in a collaborative filtering method (UBCF) and in a matrix factorization method (ALS) - we choose it instead of SVD for its superior accuracy given singularities of our User x Item matrix:
 
 **UBCF (User Based Collaborative Filtering):** this algorithm mimics word-of-mouth by analyzing rating data from many individuals. The assumption is that users with similar preferences will rate (answer) items (questions) similarly. Thus missing ratings for a user can be predicted by first finding a *neighborhood* of similar users and then aggregate the ratings of these users to form a prediction.
 
@@ -651,25 +659,24 @@ The neighborhood is defined in terms of similarity between users. Popular simila
 $$sim_{\cos}(\overrightarrow{x},\overrightarrow{y}) = \frac{\overrightarrow{x}.\overrightarrow{y}}{\|\overrightarrow{x}\|.\|\overrightarrow{y}\|},$$
 where $\overrightarrow{x} = r_x$ and $\overrightarrow{y} = r_y$ represent the row vectors in $R$ with the two users’ profile vectors. $sd(·)$ is the standard deviation and $\|.\|$ is the $l^2-norm$ of a vector. For calculating similarity using rating data only the dimensions (items) are used which were rated by both users. 
 
-Now the neighborhood for the active user $\mathcal{N}(a)\subset\mathcal{U}$ can be selected by either a threshold on the similarity or by taking the k nearest neighbors. Once the users in the neighborhood are found, their ratings are aggregated to form the predicted rating for the active user. The easiest form is to just average the ratings in the neighborhood.
+Now the neighborhood for the active user $\mathcal{N}(a)\subset\mathcal{U}$ can be selected by either a threshold on the similarity or by taking the *k nearest neighbors*. Once the users in the neighborhood are found, their ratings are aggregated to form the predicted rating for the active user. The easiest form is to just average the ratings in the neighborhood.
 
 $$\hat{r}_{aj} = \frac{1}{|{N(a)}|}{\sum_{i\in\mathcal{N(a)}} r_{ij}}$$
 **ALS (Alternating Least Squares):** ALS is an iterative optimization process where, for every iteration, we try to arrive closer and closer to a factorized representation of our original data. We have our original matrix ${R}$ of size ${u}\times{i}$ with our users, items and some type of feedback data. We then want to find a way to turn that into one matrix with users and hidden features of size u x f and one with items and hidden features of size ${f}\times{i}$. In ${U}$ and ${V}$ we have weights for how each user/item relates to each feature. What we do is we calculate ${U}$ and ${V}$ so that their product approximates ${R}$ as closely as possible: ${R}\approx{U}\times{V}$. By randomly assigning the values in U and V and using least squares iteratively we can arrive at what weights yield the best approximation of R. The least squares approach in it’s basic forms means fitting some line to the data, measuring the sum of squared distances from all points to the line and trying to get an optimal fit by minimising this value.
 
-With the alternating least squares approach we use the same idea but iteratively alternate between optimizing $U$ and fixing $V$ and vice versa. We do this for each iteration to arrive closer to ${R}={U}\times{V}$.
+With the alternating least squares approach we use this idea but iteratively alternate between optimizing $U$ and fixing $V$ and vice versa. We do this for each iteration to arrive closer to ${R}={U}\times{V}$.
 
 ```{r block_13, echo=TRUE, message=FALSE, warning=FALSE}
 # we prepare methods to run
 methods_choice <- list(
-  # list("ALS", "ALS" = list(NULL)),
+  list("ALS", "ALS" = list(NULL)),
   list("UBCF", "user-based CF" = list(nn=50))
 )
 
-# This for-loop serves for exution of each chosen method to train, test and measure-accuracy
+# This for-loop serves for exution of each chosen method to train, 
+# test and measure-accuracy
 for (a in 1:length(methods_choice)) {
-  ##########################################################
   # Train model (Recommenderlab package)
-  ##########################################################
   chosenAlgorithm <- methods_choice[[a]][[1]]
   chosenAlgorithmParams <- methods_choice[[a]][[2]]  
   # Train
@@ -678,13 +685,10 @@ for (a in 1:length(methods_choice)) {
     method = chosenAlgorithm, 
     parameter=chosenAlgorithmParams)
   
-  
-  ##########################################################
   # Test (validate) model
-  ##########################################################
   questionsList <- dictionary$Question
   names(questionsList) <- dictionary$ID
-  # ==============================
+
   # Prepare known ratings (5 out of 50) to send to the model - take from VALIDATION
   ratings <- matrix(NA, nrow = totRowsValidation, ncol = 50)
   ratings[, chosen_questions[1]] <- BF_test[,2:51][,chosen_questions[1]]
@@ -717,7 +721,7 @@ for (a in 1:length(methods_choice)) {
   # clarity in next steps
   # Inspect obtained matrix with sorted (align values per column) predictions
   head(matrixScoresPredicted)
-  # ==============================
+  
   # Join together predictions with 5 known answers
   # Let's collect together entered answers and predicted ratings to prepare 
   # results calculation
@@ -740,9 +744,8 @@ for (a in 1:length(methods_choice)) {
   matrixAllRatings <- matrixAllRatings[,colnames(BFdata)]
   colnames(matrixAllRatings)
   
-  ##########################################################
   # Score real and predicted matrices
-  ##########################################################
+  #
   # We have now both matrices (real data and predicted data) so we score them individually
   # Score adding last (predicted) row to validation data  
   scoresfile_real <- scoreFast(keys.list.allPositive, as(BF_test[,2:51], "matrix"))
@@ -750,44 +753,51 @@ for (a in 1:length(methods_choice)) {
   # Put a suffix in predicted-based scores columns to distinguish from real-based
   colnames(scoresfile_pred) <- paste(colnames(scoresfile_pred), "_pred", sep = "")
   
-  ##########################################################
   # Convert just calculated scores to ranking (percentile)
   # Results are presented in percentile for each user/trait. With all 
   # data + prediction scored together (n+1 rows matrix), calculate percentiles 
   # of the last row (results for the user) using eCDF
   # For real data percentiles
   O_score <- 
-    round(ecdf(scoresfile_real[,"openess-A"])(scoresfile_real[,"openess-A"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"openess-A"])(scoresfile_real[,"openess-A"])*100,0)
   C_score <- 
-    round(ecdf(scoresfile_real[,"conscienciousness-A"])(scoresfile_real[,"conscienciousness-A"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"conscienciousness-A"])(scoresfile_real[,"conscienciousness-A"])*100,0)
   E_score <- 
-    round(ecdf(scoresfile_real[,"extroversion-A"])(scoresfile_real[,"extroversion-A"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"extroversion-A"])(scoresfile_real[,"extroversion-A"])*100,0)
   A_score <- 
-    round(ecdf(scoresfile_real[,"agreeability-A"])(scoresfile_real[,"agreeability-A"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"agreeability-A"])(scoresfile_real[,"agreeability-A"])*100,0)
   N_score <- 
-    round(ecdf(scoresfile_real[,"natural_reactions-A"])(scoresfile_real[,"natural_reactions-A"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"natural_reactions-A"])(scoresfile_real[,"natural_reactions-A"])*100,0)
   traits_percentiles_real <- cbind(O_score, C_score, E_score, A_score, N_score)
   # For predicted data percentiles
   O_score_pred <- 
-    round(ecdf(scoresfile_real[,"openess-A"])(scoresfile_pred[,"openess-A_pred"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"openess-A"])(scoresfile_pred[,"openess-A_pred"])*100,0)
   C_score_pred <- 
-    round(ecdf(scoresfile_real[,"conscienciousness-A"])(scoresfile_pred[,"conscienciousness-A_pred"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"conscienciousness-A"])(scoresfile_pred[,"conscienciousness-A_pred"])*100,0)
   E_score_pred <- 
-    round(ecdf(scoresfile_real[,"extroversion-A"])(scoresfile_pred[,"extroversion-A_pred"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"extroversion-A"])(scoresfile_pred[,"extroversion-A_pred"])*100,0)
   A_score_pred <- 
-    round(ecdf(scoresfile_real[,"agreeability-A"])(scoresfile_pred[,"agreeability-A_pred"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"agreeability-A"])(scoresfile_pred[,"agreeability-A_pred"])*100,0)
   N_score_pred <- 
-    round(ecdf(scoresfile_real[,"natural_reactions-A"])(scoresfile_pred[,"natural_reactions-A_pred"])*100,0)
+    round(
+      ecdf(scoresfile_real[,"natural_reactions-A"])(scoresfile_pred[,"natural_reactions-A_pred"])*100,0)
   traits_percentiles_predicted <- cbind(O_score_pred, C_score_pred, E_score_pred, A_score_pred, N_score_pred)
   
-  ################################################
   # Here we have all resulting data
   names(chosenAlgorithm) = "Algorithm"
   # Other files generated during process
   head(traits_percentiles_real)
   head(traits_percentiles_predicted)
   
-  ##########################################################
   # Compose high level result in a data frame
   # We need to calculate several accuracy indicators (by trait/general, by quarter/half correct prediction, and by most traits correctly predicted)
   # Detect quartile success in trait
@@ -845,9 +855,9 @@ for (a in 1:length(methods_choice)) {
 \pagebreak
 # 4 The shiny application
 
-In addition to the model created based on existing dataset, we create also an interactive tool to show in practice how prediction works. It is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps and can be publicly accessed at https://juanesuarez.shinyapps.io/BigFive5q/
+In addition to the model created based on existing dataset, we build also an interactive tool to show in practice how prediction works. It is fully developed in R as part of current project and provisioned to internet through platform Shinnyapps and can be publicly accessed at https://juanesuarez.shinyapps.io/BigFive5q/
 
-This tool is basically an interactive web page to allow any person to answer 5 randomly selected questions, and based on them, estimate personality traits Big Five Scores by *predicting* all other 45 remaining question using our recommendation model.
+This tool is basically an interactive web to allow any person to answer 5 randomly selected questions, and based on them, estimate personality traits Big Five Scores by *predicting* all other 45 remaining question using our recommendation model.
 
 ![Screenshot1 of interactive tool](./images/screenshotsSmartphone.jpg)
 
@@ -856,24 +866,24 @@ Although this tool is fully operational, for practical and academic reasons, it 
 
 * An user can repeat test as many times as desired.
 * Algorithm implemented is UBCF (second best in our study) instead of ALS for interactivity performance.
-* Questions are chosen randomly instead of using our just developed *Minimum Combined Correlation Algorithm*
-* Most the most important... all *hidden* predicted question's answers are shown for instructional purposes
+* Questions are chosen randomly instead of using our just developed *Minimum Combined Correlation Algorithm*.
+* All *hidden* predicted question's answers are shown for instructional purposes.
 
 This promising tool inspires many developments to incorporate nice functionalities, potentially very useful in combination with other tools for other specific needs, Some of them:
-* allow multilanguage
-* add a submission process to manage transactionally users and their results, preventiong repetition and storing results
-ñadir traducción
-* hide results of prediction of unknown questions
-* combine with other matter-related *control/classification" questions to improve prediction or link to other new outcomes
-* crear un “submit” para queda el resultado sea “inamovible” (o explicar lo dejó así “interactivo” y mostrando las predicciones de preguntas con fines académicos +- “disclosed mode”)
 
+* Allow multilanguage.
+* Add a submission process to manage transactionally users and their results, preventiong repetition and storing results.
+* Hide results of prediction of unknown questions.
+* Combine with other matter-related *control/classification" questions to improve prediction or link to other new outcomes.
 
 \pagebreak
 # 5 Results
 
-We have got a very appretiable result as a result of testing our two chosen algorithms (UBCF and ALS). UBCF offers better performance but ALS results in improves accuracies for all indicators.
-
 We see how accuracies, as defined, get significantly improved with both ALS and UBCF methods algorithms respect to base "random" reference generated with the Montecarlo approach.
+
+We have got a very appretiable result after training and validating our two chosen algorithms (UBCF and ALS). UBCF offers better performance but ALS results in improves accuracies for all indicators.
+
+
 
 ```{r block_14, echo=FALSE, message=FALSE, warning=FALSE}
 # Accuracies by trait and aggregated
@@ -893,37 +903,37 @@ table_results %>%
   spread(Algorithm, Accuracy, fill = "") %>% 
   mutate(
     Improvement_UBCF = paste(100*round((as.numeric(UBCF)/as.numeric(Montecarlo)),2),"%",sep = ""), 
-    Improvement_ALS = paste(100*round((as.numeric(UBCF)/as.numeric(Montecarlo)),2),"%",sep = "")    
+    Improvement_ALS = paste(100*round((as.numeric(ALS)/as.numeric(Montecarlo)),2),"%",sep = "")    
     ) %>% 
   knitr::kable(digits = 4)
 
 # Improvement number
 refMC <- table_results %>% filter(Algorithm == "Montecarlo" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
-refALS <- table_results %>% filter(Algorithm == "UBCF" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
+refALS <- table_results %>% filter(Algorithm == "ALS" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
 improvementNumber <- paste(100*round((as.numeric(refALS)/as.numeric(refMC)),2),"%",sep = "")
 ```
 
-As a final high level number of prediction improvement, the improvement in **global accuracy reach an impressing `r improvementNumber`** when all measured accuracies consolidated.
+As a final high level number of prediction improvement, the improvement in global accuracy **reach an impressing `r improvementNumber` when all measured accuracies consolidated**.
 
 
 \pagebreak
 # 6 Conclusion
-The result of modeling of this project is very inspiring method to dramatically reduce, with relatively low impact on results, the cost of filling very long questionnaires to assess personality traits.
+The model resulting of this project is an inspiring method to dramatically reduce, with relatively low impact on results, the cost of filling very long questionnaires to assess personality traits.
 
-We have followed unchanges the definition of a widely used and prestigious "Big Five Traits Test", but adding data science to improve the process. More specifically, we have used thousands of existing test to predict answers of future users in an absolutely simplified way.
+We have followed unchanged the definition of a widely used and prestigious "Big Five Traits Test", but adding data science to improve the process. More specifically, we have used thousands of existing test to predict answers of future users in an absolutely simplified way.
 
-Probably the most exciting outcome of this project is that all this modeling is easy to integrate to solve problems in many areas where personality of individuals *play a role* in the problem description or prediction. Also, this work open the possibility to adapt similar approach to other pshychomentric challenges.
+Probably the most exciting outcome of this project is that all this modeling is easy to integrate to solve problems in many areas where personality of individuals *play a role* in the problem description or prediction. Also, this work open the possibility to adapt similar approach to other pshychometric challenges.
 
-As an *extra bonus*, we have build also a web app to interactively show results and make it visible how model works. This tool want to catalize inspiration of data scientist and general viewers on the many possibilities we have in front of us.
+As an *extra bonus*, we have build also a web app to interactively show results and make it visible how model works. This tool wants to catalize inspiration of data scientist and general viewers on the many possibilities we have in front of us.
 
-**Measurement of the accuracy** of the model will require to define and calculate indicators of how good the model works in predicting the right trait score for an individual. The fact result is a set of five numbers "percentiles" will make us define metrics for assessing how close predictions are to real results.
+**Measurement of the accuracy** of the model has required to define and calculate indicators of how good the model works in predicting the right trait score for an individual. The fact result is a set of five numbers "percentiles" will make us define metrics for assessing how close predictions are to real results.
 
-There are some clear **premises we will follow for this project**:
+There are some clear **premises we strictly followed for this project**:
 
 * Measurable: Strict measurement of results, based on a clear definition of the accuracy obtained.
-* Useful: Prepare model to be usuful for further developments/integrations, i.e. make it as a *pluggable module* to be integrated in other systems. For example, instead of showing always "optimal" questions to be answered, we prefer to make them -partially- random, so a deployment at bigger scale might benefit of variability.
+* Useful and escalable: Prepare model to be usuful for further developments/integrations, i.e. make it as a *pluggable module* to be integrated in other systems. For example, instead of showing always "optimal" questions to be answered, we prefer to make them -partially- random, so a deployment at bigger scale might benefit of variability.
 * Indepentent validation: Never use validation (test) data partition to estimate parameters of select any criteria during training process
-* Computability: project must be deep in calculation but affordable within a local environment in terms of performance. This means that we will reduce our dataset during some stages, but a wider execution can be always an option without need of changing source code, just the parameter.
+* Computability: project is deep in calculation but affordable within a local environment in terms of performance. This means that we reduced our dataset during some stages, but a wider execution can be always an option without need of changing source code, just the parameter.
 
 There are several **original aspects** on this project:
 
@@ -931,18 +941,18 @@ There are several **original aspects** on this project:
 * An app to play: To create an interactive, open access, graphical app tool to facilitate understanding of the concept and even disclosing some of the key prediction steps followed.
 * Questions selection: Our own algorithm to optimize selection of questions to get answer for, so the change (to ensure varibility on data retrieval), whilst optizing combination so final accuracy is best.
 
-The promising methods created and results obtained open the door to furter future potential developments/additions for future versions:
+Furthermore, the promising methods created and results obtained open the door to potential developments/additions for future versions:
 
 * Keep optimizing/tuning Recommender (evaluationScheme, k-fold, bootstrap, no-sparse specifics, ... ).
 * Increase dataset size according to computation capability available.
 * Ensemble to use different algotithm optimal for each specific trait score prediction.
-* Ensemble a model pre or post recommnder to consider Month and/or Country as significant predictors.
+* Ensemble a model pre or post recommender to consider Month and/or Country as significant predictors.
 * Extend to 100 questions version of the Test and/or increase 5 to more questions to use as base.
 * Add external questions to facilitate classification.
 * Integrate model with existing model that already analized outcomes predicted by personality traits.
 * Move web app to "production" doing improvements and allowing public users functionality.
 
-As a final conclusion, we can state we have reached challenge goal in terms of project requirements and accuracy for the validation set provided.
+As a final conclusion, we can state we have successfully accomplished challenge goal in terms of project requirements and accuracy for the validation set provided.
 
 
 

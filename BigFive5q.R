@@ -245,12 +245,13 @@ corrplot(corAllQuestions[11:20,11:20],
 # Correlation with other groups. However, we see also some other significant correlations of some questions with questions that "belong" to different traits. Since our challenge is preciselly to use few (only five) questions to explain as mach as possible of the result for all traits, it will be useful to use these correlations to select what specific questions we show to get answer. 
 # http://www.sthda.com/english/wiki/visualize-correlation-matrix-using-correlogram
 corrplot(corAllQuestions, 
-         method = "circle",
+         method = "color",
          type = "lower",
          order = "alphabet", 
          tl.col = "black", tl.srt = 45, tl.cex = 0.4, 
          bg = "white", 
-         p.mat = p.mat, sig.level = 0.01, 
+         p.mat = p.mat, sig.level = 0.01, insig='blank', 
+         title =  "\n\n Questions correlation", 
          mar = c(0,0,1,0)
          )
 
@@ -645,13 +646,13 @@ table_results %>%
     Improvement_UBCF = 
       paste(100*round((as.numeric(UBCF)/as.numeric(Montecarlo)),2),"%",sep = ""), 
     Improvement_ALS = 
-      paste(100*round((as.numeric(UBCF)/as.numeric(Montecarlo)),2),"%",sep = "")    
+      paste(100*round((as.numeric(ALS)/as.numeric(Montecarlo)),2),"%",sep = "")    
     ) %>% 
   knitr::kable(digits = 4)
 
 # Improvement number
 refMC <- table_results %>% filter(Algorithm == "Montecarlo" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
-refALS <- table_results %>% filter(Algorithm == "UBCF" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
+refALS <- table_results %>% filter(Algorithm == "ALS" & Accuracy_type == "3+ hits HighLow") %>% pull(All)
 improvementNumber <- paste(100*round((as.numeric(refALS)/as.numeric(refMC)),2),"%",sep = "")
 improvementNumber
 
