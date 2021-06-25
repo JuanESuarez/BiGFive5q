@@ -5,10 +5,10 @@ account: juanesuarez
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4244530
-bundleId: 4742372
+bundleId: 4755435
 url: https://juanesuarez.shinyapps.io/BigFive5q/
-when: 1624348460.88615
-lastSyncTime: 1624348460.88615
+when: 1624617988.9915
+lastSyncTime: 1624617988.9915
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .Rbuildignore|.RData|BigFive5q.R|data_source/BFtests.rds|data_source/codebook.txt|data_source/data-final.csv|DESCRIPTION|dev/app.R|dev/app_2.R|dev/app_3.R|dev/BigFive5q.R|dev/BigFive5q_2.R|images/BigFiveInfographic.jpg|images/shinnyapp_image1.jpg|images/shinnyapp_image2.jpg|images/TestIntro.png|load_data.R|README.md|report_JES_BigFive5q.pdf|report_JES_BigFive5q.Rmd
+ignoredFiles: .Rbuildignore|.RData|BigFive5q.R|data_source/BFtests.rds|data_source/codebook.txt|data_source/data-final.csv|DESCRIPTION|dev/app.R|dev/app_2.R|dev/app_3.R|dev/BigFive5q.R|dev/BigFive5q_2.R|load_data.R|README.md|report_JES_BigFive5q.pdf|report_JES_BigFive5q.Rmd|images
